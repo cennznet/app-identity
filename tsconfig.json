@@ -1,19 +1,26 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "paths": {
-      "*": ["*", "IBS/*"]
+  "ts-node": {
+    "compilerOptions": {
+      "target": "es5",
+      "lib": ["esnext"],
+      "allowJs": true,
+      "skipLibCheck": true,
+      "strict": false,
+      "forceConsistentCasingInFileNames": true,
+      "noEmit": true,
+      "esModuleInterop": true,
+      "module": "CommonJS",
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "isolatedModules": false,
+      "jsx": "preserve",
+      "incremental": true,
+      "baseUrl": ".",
+      "paths": {
+        "*": ["*", "IBS/*"]
+      }
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["custom.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }

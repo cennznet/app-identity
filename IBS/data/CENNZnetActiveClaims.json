@@ -1,8 +1,0 @@
-{
-  "claims": [
-    {
-      "CENNZ_account": "Test account",
-      "email_hash": "I am a test email hash, not a real email hash"
-    }
-  ]
-}

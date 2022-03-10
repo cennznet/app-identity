@@ -1,178 +1,176 @@
 import { Api } from '@cennznet/api';
 import { Keyring } from '@polkadot/keyring';
 import { cryptoWaitReady, blake2AsHex } from '@polkadot/util-crypto';
-//import { fs } from "fs";
-// import {checkMail, connectEmail} from  './emailReader');
-import dotenv from '../node_modules/dotenv';
+import * as dotenv from 'dotenv';
+dotenv.config();
+import dbConnect from "../lib/dbConnect";
+import CennznetClaims from "../models/cennznetclaims";
+import AccountClaims from "../models/accountclaims";
 
 const provider = 'ws://localhost:9944';
-const REG_INDEX = 0;
 
-let api: any;
-let keyring: any;
-let eve: any;
+let api;
+let keyring;
+let eve;
 
 async function initialise() {
     // Create account key pair
-    console.log("Initialising?");
     const types = {
-        // "MarketplaceId": "u32",
-        // "IdentityInfo": {
-        //     "additional": "Vec<(Data, Data)>",
-        //     "display": "Data",
-        //     "legal": "Data",
-        //     "web": "Data",
-        //     "riot": "Data",
-        //     "email": "Data",
-        //     "pgp_fingerprint": "Option<[u8; 20]>",
-        //     "image": "Data",
-        //     "twitter": "Data"
-        // }
+        "MarketplaceId": "u32",
+        "IdentityInfo": {
+            "additional": "Vec<(Data, Data)>",
+            "legal": "Data",
+            "web": "Data",
+            "discord": "Data",
+            "email": "Data",
+            "pgp_fingerprint": "Option<[u8; 20]>",
+            "image": "Data",
+            "twitter": "Data"
+        }
     }
     await cryptoWaitReady();
     api = await Api.create({provider, types});
     keyring = new Keyring({ type: 'sr25519' });
-    console.log(`Connect to CENNZnet network ${provider}`);
+    console.log(`Connected to CENNZnet network ${provider}`);
     eve = keyring.addFromUri('//Eve');
 }
-//
-// function openJsonFile(file_path: string) {
-//     try {
-//         return JSON.parse(fs.readFileSync(file_path).toString());
-//     } catch (err) {
-//         console.log("Error parsing JSON string:", err);
-//     }
-// }
-//
-// function addCENNZnetClaim(identity: { CENNZ_account: any; email_hash?: any; }) {
-//     const file_path = "./data/CENNZnetActiveClaims.json";
-//     let claims = openJsonFile(file_path);
-//     if (!claims) { return }
-//     let already_existing = false;
-//     for (let i = 0; i < claims["claims"].length; i++) {
-//         // Check if account already exists
-//         if (claims["claims"][i].CENNZ_account === identity.CENNZ_account) {
-//             claims["claims"][i] = identity;
-//             already_existing = true;
-//         }
-//     }
-//     if (!already_existing) {
-//         claims["claims"].push(identity);
-//     }
-//     const new_json_string = JSON.stringify(claims, null, 2);
-//     fs.writeFile(file_path, new_json_string, err => {
-//         if (err) {
-//             console.log('Error writing file', err);
-//         } else {
-//             console.log('Successfully added CENNZnet account to file: ' + identity.CENNZ_account);
-//         }
-//     });
-// }
-//
-// function findMatch() {
-//     console.log("-- Searching for matches");
-//     const cennz_file_path = "./data/CENNZnetActiveClaims.json";
-//     const email_file_path = "./data/EmailsAwaitingClaims.json";
-//
-//     let CENNZnet_claims = openJsonFile(cennz_file_path);
-//     if (!CENNZnet_claims) { return }
-//     let email_claims = openJsonFile(email_file_path);
-//     if (!email_claims) { return }
-//
-//     let match_found = false;
-//     for (let i = 0; i < CENNZnet_claims["claims"].length; i++) {
-//         let email_keys = Object.keys(email_claims);
-//         for (let j = 0; j < email_keys.length; j++) {
-//             let key = email_keys[j];
-//             const email_hash = blake2AsHex(key);
-//             if (email_hash === CENNZnet_claims["claims"][i].email_hash) {
-//                 console.log("++ Match found!");
-//                 // Try send transaction to CENNZnet
-//                 if (!api) break;
-//                 try {
-//                     const target = CENNZnet_claims["claims"][i].CENNZ_account;
-//                     const judgement = "Reasonable";
-//                     const extrinsic = api.tx.identity.provideJudgement(REG_INDEX, target, judgement);
-//                     extrinsic.signAndSend(eve);
-//                     delete email_claims[key];
-//                     CENNZnet_claims["claims"].splice(i, 1);
-//                     match_found = true;
-//                     console.log("++ Judgement given for account: " + target)
-//                     break;
-//                 } catch(err) {
-//                     console.log(err);
-//                 }
-//             }
-//         }
-//         if (match_found) break;
-//     }
-//
-//     if (!match_found) return;
-//
-//     // Rewrite CENNZnet File
-//     const new_CENNZ_json_string = JSON.stringify(CENNZnet_claims, null, 2);
-//     fs.writeFile(cennz_file_path, new_CENNZ_json_string, err => {
-//         if (err) {
-//             console.log('Error writing file', err);
-//         }
-//     });
-//     // Rewrite CENNZnet File
-//     const new_email_json_string = JSON.stringify(email_claims, null, 2);
-//     fs.writeFile(email_file_path, new_email_json_string, err => {
-//         if (err) {
-//             console.log('Error writing file', err);
-//         }
-//     });
-// }
-//
-// async function processDataAtBlockHash(blockHash) {
-//     const block = await api.rpc.chain.getBlock(blockHash);
-//     if (block) {
-//         const extrinsics = block.block.extrinsics.toHuman();
-//         const filteredExtrinsics = extrinsics.filter(ext => ext.isSigned && ext.method.section === 'identity');
-//         if (filteredExtrinsics.length > 0) {
-//             for (let i = 0; i < filteredExtrinsics.length; i++) {
-//                 if (filteredExtrinsics[i].method.method === 'setIdentity') {
-//                     console.log("-- New CENNZnet identity transaction");
-//                     const args = filteredExtrinsics[i].method.args;
-//                     if (args[0]) {
-//                         const key = Object.keys(args[0].email)[0];
-//                         // console.log(args);
-//                         if (key === 'BlakeTwo256') {
-//                             let email_hash = args[0].email[key];
-//                             const identity = {
-//                                 "CENNZ_account": filteredExtrinsics[i].signer,
-//                                 "email_hash": email_hash
-//                             }
-//                             // Save identity to json file
-//                             addCENNZnetClaim(identity);
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     } else {
-//         console.log(`Retrieving block details from rpc.chain.getBlock failed for hash ${blockHash}`)
-//     }
-//     //Process Emails
-//     checkMail(keyring);
-//     //Check for matches
-//     findMatch();
-// }
-//
+
+// Add a new CENNZnet identity claim to the database (Or update existing)
+async function addCENNZnetClaim(identity: { cennznet_account: string; account_hash: string; account_type: string }) {
+    await dbConnect();
+    try {
+        // Filter includes CENNZnet account AND account_type
+        // This is because a user can verify different account types so we need to distinguish both.
+        const filter = { cennznet_account: identity.cennznet_account, account_type: identity.account_type }
+        const existingCennznetClaim = await CennznetClaims.find(filter);
+
+        if (existingCennznetClaim) {
+            // Claim already exists, Check if hash is different and if it has NOT been verified already
+            if (existingCennznetClaim.account_hash !== identity.account_hash && !existingCennznetClaim.verified) {
+                await CennznetClaims.updateOne(filter, {
+                    account_hash: identity.account_hash,
+                });
+                console.log(
+                    `Updated CENNZnet account: ${identity.cennznet_account} 
+                     For account type: ${identity.account_type}
+                     With new hash: ${identity.account_hash}
+                    `
+                );
+            } else {
+                console.log("Claim already exists");
+            }
+        } else {
+            // Create new entry in DB
+            await CennznetClaims.create({
+                cennznet_account: identity.cennznet_account,
+                account_hash: identity.account_hash,
+                account_type: identity.account_type,
+                verified: false,
+            });
+            console.log(`Successfully added CENNZnet account to file: ${identity.cennznet_account} `);
+        }
+    }
+    catch (err) {
+        // TODO better error handling
+        console.log(err);
+    }
+}
+
+async function findMatch() {
+    console.log("-- Searching for matches");
+
+    // Get all un verified claims from cennznetclaims DB
+    const cennznetClaims = await CennznetClaims.find({verified: false});
+
+    for (let i = 0; i < cennznetClaims.length; i++) {
+        const claim = cennznetClaims[i];
+        // Check if there are matches in accountclaims DB
+        const filter = { cennznet_account: claim.cennznet_account, account_type: claim.account_type }
+        const accountMatch = await AccountClaims.findOne(filter);
+        if (accountMatch) {
+            // TODO Check whether we want two matches before providing a judgement
+            if (await submitJudgement(claim.cennznet_account)) {
+                await CennznetClaims.updateOne(filter, {
+                    verified: true,
+                });
+            }
+        }
+    }
+}
+
+async function submitJudgement(target: string) {
+    if (!api) {
+        console.log("API not connected, judgement couldn't be made");
+        return false
+    }
+    try {
+        const judgement = "KnownGood";
+        const extrinsic = api.tx.identity.provideJudgement(process.env.REG_INDEX, target, judgement);
+        // TODO change to CENNZnet account using private key
+        extrinsic.signAndSend(eve);
+        console.log("++ Judgement given for account: " + target)
+    } catch(err) {
+        console.log(err);
+    }
+    return true
+}
+
+async function processDataAtBlockHash(blockHash) {
+    const block = await api.rpc.chain.getBlock(blockHash);
+    if (block) {
+        const extrinsics = block.block.extrinsics.toHuman();
+        const filteredExtrinsics = extrinsics.filter(ext => ext.isSigned && ext.method.section === 'identity');
+        if (filteredExtrinsics.length > 0) {
+            for (let i = 0; i < filteredExtrinsics.length; i++) {
+                if (filteredExtrinsics[i].method.method === 'setIdentity') {
+                    console.log("-- New CENNZnet identity transaction");
+                    const args = filteredExtrinsics[i].method.args;
+                    //Discord
+                    if (args[0].discord) {
+                        const key = Object.keys(args[0].discord)[0];
+                        if (key === 'BlakeTwo256') {
+                            const discord_hash = args[0].discord[key];
+                            const identity = {
+                                "cennznet_account": filteredExtrinsics[i].signer,
+                                "account_hash": discord_hash,
+                                "account_type": "discord"
+                            }
+                            await addCENNZnetClaim(identity);
+                        }
+                    }
+                    // Twitter
+                    if (args[0].twitter) {
+                        const key = Object.keys(args[0].twitter)[0];
+                        if (key === 'BlakeTwo256') {
+                            const twitter_hash = args[0].twitter[key];
+                            const identity = {
+                                "cennznet_account": filteredExtrinsics[i].signer,
+                                "account_hash": twitter_hash,
+                                "account_type": "twitter"
+                            }
+                            await addCENNZnetClaim(identity);
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        console.log(`Retrieving block details from rpc.chain.getBlock failed for hash ${blockHash}`)
+    }
+}
+
 async function main() {
     // Scan the finalized block and store it in db
-    await api.rpc.chain.subscribeFinalizedHeads(async (head: any) => {
+    await api.rpc.chain.subscribeFinalizedHeads(async (head) => {
         const finalizedBlockAt = head.number.toNumber();
         console.log("\n===== Block Number: " + finalizedBlockAt.toString() + " =====")
         const blockHash = await api.rpc.chain.getBlockHash(finalizedBlockAt.toString());
-        // await processDataAtBlockHash(blockHash);
+        await processDataAtBlockHash(blockHash);
+        await findMatch();
     });
 }
 
 initialise().then(() => {
-    //imap.connect();
-    //connectEmail();
     main().catch((error) => {
         console.error(error);
     });

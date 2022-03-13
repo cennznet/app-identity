@@ -42,5 +42,8 @@ yarn-error.log*
 /.idea
 
 # yarn
-/.yarn
-.yarnrc.yml
+.yarn/*
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

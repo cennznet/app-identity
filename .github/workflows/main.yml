@@ -36,5 +36,5 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: lint
         run: |
-          yarn install
+          yarn install --immutable
           yarn lint

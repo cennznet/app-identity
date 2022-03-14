@@ -3,9 +3,9 @@ import { Keyring } from "@polkadot/keyring";
 import { cryptoWaitReady, blake2AsHex } from "@polkadot/util-crypto";
 import * as dotenv from "dotenv";
 dotenv.config();
-import dbConnect from "../libs/db/dbConnect";
-import CennznetClaims from "../libs/db/models/cennznetclaims";
-import AccountClaims from "../libs/db/models/accountclaims";
+import dbConnect from "./libs/db/dbConnect";
+import CennznetClaims from "./libs/db/models/cennznetclaims";
+import AccountClaims from "./libs/db/models/accountclaims";
 
 const provider = "ws://localhost:9944";
 

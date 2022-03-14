@@ -9,11 +9,11 @@
 /coverage
 
 # next.js
-/.next/
-/out/
+packages/next-app/.next/
+packages/next-app/out/
 
 # production
-/build
+packages/next-app/build
 
 # misc
 .DS_Store
@@ -26,7 +26,8 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env.local
+packages/next-app/.env.local
+packages/IBS/.env
 .env.development.local
 .env.test.local
 .env.production.local

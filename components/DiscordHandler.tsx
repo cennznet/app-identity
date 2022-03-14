@@ -1,16 +1,10 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { css } from "@emotion/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 
 const DiscordHandler: FC = () => {
 	const { data: session } = useSession();
-
-	useEffect(() => {
-		if (!session) return;
-
-		console.log("session", session);
-	}, [session]);
 
 	const avatarLoader = ({ src, width }) => {
 		return `${src}?w=${width}`;

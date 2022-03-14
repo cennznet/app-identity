@@ -19,7 +19,7 @@ const DiscordHandler: FC = () => {
 			)}
 			<button css={styles.buttonContainer}>
 				{session?.authProvider === "discord" ? (
-					<div css={styles.authButton} onClick={async () => await signOut()}>
+					<div css={styles.authButton} onClick={async () => await signOut({ redirect: false })}>
 						{session?.user?.image ? (
 							<Image
 								loader={avatarLoader}

@@ -1,0 +1,28 @@
+{
+  "name": "next-app",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.8.2",
+    "@emotion/styled": "^11.8.1",
+    "@mui/icons-material": "^5.5.0",
+    "@mui/material": "^5.5.0",
+    "@polkadot/react-identicon": "^1.2.1",
+    "next": "^12.1.0",
+    "next-auth": "^4.2.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "store": "^2.0.12"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.21",
+    "@types/react": "17.0.40",
+    "eslint-config-next": "12.1.0",
+    "eslint-config-prettier": "^8.5.0"
+  }
+}

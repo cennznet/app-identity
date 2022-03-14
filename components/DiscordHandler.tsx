@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 
-const TwitterHandler: FC = () => {
+const DiscordHandler: FC = () => {
 	const { data: session } = useSession();
 
 	useEffect(() => {
@@ -12,35 +12,49 @@ const TwitterHandler: FC = () => {
 		console.log("session", session);
 	}, [session]);
 
+	const avatarLoader = ({ src, width }) => {
+		return `${src}?w=${width}`;
+	};
+
 	return (
 		<div>
-			{session?.authProvider === "twitter" && (
+			{session?.authProvider === "discord" && (
 				<div css={styles.username}>
-					<p>@{session?.user?.name}</p>
+					<p>{session?.user?.name}</p>
 				</div>
 			)}
 			<button css={styles.buttonContainer}>
-				{session?.authProvider === "twitter" ? (
+				{session?.authProvider === "discord" ? (
 					<div css={styles.authButton} onClick={async () => await signOut()}>
-						<Image
-							src={"/images/twitter.svg"}
-							width={20}
-							height={20}
-							alt="twitter-logo"
-							css={styles.logo}
-						/>
+						{session?.user?.image ? (
+							<Image
+								loader={avatarLoader}
+								src={session?.user?.image}
+								alt="discord-avatar"
+								width={20}
+								height={20}
+							/>
+						) : (
+							<Image
+								src={"/images/discord.svg"}
+								width={20}
+								height={20}
+								alt="discord-logo"
+								css={styles.logo}
+							/>
+						)}
 						<p>Sign out</p>
 					</div>
 				) : (
 					<div
 						css={styles.authButton}
-						onClick={async () => await signIn("twitter")}
+						onClick={async () => await signIn("discord")}
 					>
 						<Image
-							src={"/images/twitter.svg"}
+							src={"/images/discord.svg"}
 							width={20}
 							height={20}
-							alt="twitter-logo"
+							alt="discord-logo"
 							css={styles.logo}
 						/>
 						<p>Sign in</p>
@@ -51,13 +65,13 @@ const TwitterHandler: FC = () => {
 	);
 };
 
-export default TwitterHandler;
+export default DiscordHandler;
 
 export const styles = {
 	username: css`
 		position: absolute;
 		top: 40px;
-		right: 10px;
+		right: 150px;
 		width: 120px;
 		text-align: center;
 		margin: 20px;
@@ -74,7 +88,7 @@ export const styles = {
 		cursor: pointer;
 		position: absolute;
 		top: 15px;
-		right: 10px;
+		right: 150px;
 		border-radius: 5px;
 		display: flex;
 		width: 120px;

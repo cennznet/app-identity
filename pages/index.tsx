@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { css } from "@emotion/react";
 import TwitterHandler from "@/components/TwitterHandler";
+import DiscordHandler from "@/components/DiscordHandler";
 
 const Home: FC = () => {
 	return (
@@ -10,6 +11,7 @@ const Home: FC = () => {
 				<h1 css={styles.heading}>CENNZnet Identity</h1>
 			</div>
 			<TwitterHandler />
+			<DiscordHandler />
 		</div>
 	);
 };
@@ -34,7 +36,7 @@ export const styles = {
 	`,
 	container: css`
 		width: 50%;
-		margin: 15px auto;
+		margin: 35px auto;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;

@@ -40,7 +40,7 @@ export default NextAuth({
 					const format = profile.avatar.startsWith("a_") ? "gif" : "png";
 					profile.image_url = `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.${format}`;
 				} else {
-					profile.image_url = 'images/discord.svg'
+					profile.image_url = "images/discord.svg";
 				}
 
 				return {

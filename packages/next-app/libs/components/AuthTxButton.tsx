@@ -13,13 +13,13 @@ const AuthTxButton: FC<{
 	if (session?.validAccount) {
 		if (CENNZnetAddress)
 			return (
-				<div css={styles.button(String(authProvider))} onClick={sendTx}>
+				<div css={styles.button(authProvider)} onClick={sendTx}>
 					<p>link account</p>
 				</div>
 			);
 
 		return (
-			<div css={styles.button(String(authProvider))}>
+			<div css={styles.button(authProvider, true)}>
 				<p>PLEASE ENTER A CENNZnet ADDRESS</p>
 			</div>
 		);
@@ -27,10 +27,10 @@ const AuthTxButton: FC<{
 
 	return (
 		<div
-			css={styles.button(String(authProvider))}
+			css={styles.button(authProvider)}
 			onClick={async () => await signIn(authProvider)}
 		>
-			<p>PLEASE SIGN IN WITH A VALID {authProvider} ACCOUNT</p>
+			<p>please sign in with a valid {authProvider} account</p>
 		</div>
 	);
 };
@@ -39,7 +39,7 @@ export default AuthTxButton;
 
 export const styles = {
 	button:
-		(authProvider: string) =>
+		(authProvider: string, cennznet?: boolean) =>
 		({ palette }) =>
 			css`
 				cursor: pointer;
@@ -55,9 +55,10 @@ export const styles = {
 				align-items: center;
 				display: flex;
 				font-weight: bold;
+
 				p {
 					font-size: 14px;
-					text-transform: uppercase;
+					text-transform: ${cennznet ? "none": "uppercase"};
 					@media (max-width: 500px) {
 						font-size: 10px;
 					}

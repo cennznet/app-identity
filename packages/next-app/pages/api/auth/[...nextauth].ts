@@ -26,7 +26,7 @@ export default NextAuth({
 
 				return {
 					id: data.id,
-					name: data.username,
+					name: `@${data.username}`,
 				};
 			},
 		}),
@@ -54,6 +54,7 @@ export default NextAuth({
 	callbacks: {
 		async session({ session }) {
 			session.authProvider = store.get("auth-provider");
+			session.validAccount = true;
 
 			return session;
 		},

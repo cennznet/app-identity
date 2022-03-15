@@ -5,7 +5,6 @@ declare module "next-auth" {
 		user: {
 			address: string;
 		} & DefaultSession["user"];
-		username?: string;
 		validAccount?: Boolean;
 	}
 }

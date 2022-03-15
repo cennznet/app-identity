@@ -4,7 +4,7 @@ import { signOut, useSession } from "next-auth/react";
 import { AccountInput, AuthTxButton, SignOut } from "@/libs/components";
 import { AuthProvider } from "@/types";
 
-const Discord: FC = () => {
+const Home: FC = () => {
 	const { data: session } = useSession();
 	const [address, setAddress] = useState<string>();
 	const [authProvider, setAuthProvider] = useState<AuthProvider>();
@@ -50,7 +50,7 @@ const Discord: FC = () => {
 	);
 };
 
-export default Discord;
+export default Home;
 
 const styles = {
 	root:

@@ -24,7 +24,7 @@ export const styles = {
 		flex-direction: row;
 
 		img {
-			margin-right: 10px;
+			margin-right: 0.6em;
 		}
 	`,
 	heading: css`
@@ -36,7 +36,7 @@ export const styles = {
 	`,
 	container: css`
 		width: 50%;
-		margin: 35px auto;
+		margin: 2em auto;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;

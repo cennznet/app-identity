@@ -1,21 +1,20 @@
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import { css } from "@emotion/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 
 const TwitterHandler: FC = () => {
 	const { data: session } = useSession();
+	const activeSession = session?.authProvider === "twitter"
+
+	const buttonClickHandler = useCallback(async () => {
+		if (!!session) return await signOut({ redirect: false });
+		await signIn("twitter");
+	}, [session]);
 
 	return (
-		<div>
-			{session?.authProvider === "twitter" && (
-				<div css={styles.username}>
-					<p>@{session?.user?.name}</p>
-				</div>
-			)}
-			<button css={styles.buttonContainer}>
-				{session?.authProvider === "twitter" ? (
-					<div css={styles.authButton} onClick={async () => await signOut({ redirect: false })}>
+			<button css={styles.buttonContainer(!!session)}>
+					<div css={styles.authButton} onClick={buttonClickHandler}>
 						<Image
 							src={"/images/twitter.svg"}
 							width={20}
@@ -23,57 +22,26 @@ const TwitterHandler: FC = () => {
 							alt="twitter-logo"
 							css={styles.logo}
 						/>
-						<p>Sign out</p>
+						{activeSession && (<p>@{session.user.name}</p>)}
+						<b>{activeSession ? "sign out" : "sign in"}</b>
 					</div>
-				) : (
-					<div
-						css={styles.authButton}
-						onClick={async () => await signIn("twitter")}
-					>
-						<Image
-							src={"/images/twitter.svg"}
-							width={20}
-							height={20}
-							alt="twitter-logo"
-							css={styles.logo}
-						/>
-						<p>Sign in</p>
-					</div>
-				)}
 			</button>
-		</div>
 	);
 };
 
 export default TwitterHandler;
 
 export const styles = {
-	username: css`
-		position: absolute;
-		top: 40px;
-		right: 10px;
-		width: 120px;
-		text-align: center;
-		margin: 20px;
-		@media (max-width: 500px) {
-			margin: 0;
-		}
-		p {
-			font-size: 14px;
-			font-weight: bold;
-			overflow: scroll;
-		}
-	`,
-	buttonContainer: css`
+	buttonContainer: (session: boolean) => css`
 		cursor: pointer;
 		position: absolute;
-		top: 15px;
-		right: 10px;
-		border-radius: 5px;
+		top: 4.5em;
+		right: 1em;
+		border-radius: 4px;
 		display: flex;
-		width: 120px;
+		width: ${session ? "auto" : "120px"};
 		box-sizing: border-box;
-		margin: 20px;
+		margin: 1.5em;
 		border: transparent;
 		box-shadow: 4px 8px 8px rgb(17 48 255 / 10%);
 		@media (max-width: 500px) {
@@ -85,15 +53,18 @@ export const styles = {
 		height: 30px;
 		font-size: 12px;
 		letter-spacing: 0.3px;
-		padding: 5px 5px;
+		padding: 0.5em 0.5em;
 		margin: 0 auto;
 
 		p {
-			margin-left: 5px;
-			margin-top: 2px;
+			margin: 0.15em 0.3em 0 1em;
+			line-height: 125%;
+		}
+
+		b {
+			margin: 0.15em 0 0 0.5em;
 			text-transform: uppercase;
 			line-height: 125%;
-			font-weight: bold;
 		}
 	`,
 	logo: css`

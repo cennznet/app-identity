@@ -58,7 +58,7 @@ export const styles = {
 
 				p {
 					font-size: 14px;
-					text-transform: ${cennznet ? "none": "uppercase"};
+					text-transform: ${cennznet ? "none" : "uppercase"};
 					@media (max-width: 500px) {
 						font-size: 10px;
 					}

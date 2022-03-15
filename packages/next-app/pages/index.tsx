@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { signOut, useSession } from "next-auth/react";
 import { AccountInput, AuthTxButton, SignOut } from "@/libs/components";
@@ -17,10 +17,13 @@ const Discord: FC = () => {
 			: setAuthProvider("discord");
 	}, [session]);
 
-	const switchProvider = async (provider: AuthProvider) => {
-		await signOut({ redirect: false });
-		setAuthProvider(provider);
-	};
+	const switchProvider = useCallback(
+		async (provider: AuthProvider) => {
+			if (!!session) await signOut({ redirect: false });
+			setAuthProvider(provider);
+		},
+		[session]
+	);
 
 	return (
 		<div css={styles.root(authProvider)}>

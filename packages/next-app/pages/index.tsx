@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { css } from "@emotion/react";
-import TwitterHandler from "@/components/TwitterHandler";
-import DiscordHandler from "@/components/DiscordHandler";
+import TwitterHandler from "@/libs/components/TwitterHandler";
+import DiscordHandler from "@/libs/components/DiscordHandler";
 
 const Home: FC = () => {
 	return (

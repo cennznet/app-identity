@@ -64,8 +64,8 @@ async function addCENNZnetClaim(identity: {
 				});
 				console.log(
 					`Updated CENNZnet account: ${identity.cennznet_account}\n` +
-					`For account type: ${identity.account_type}\n` +
-					`With new hash: ${identity.account_hash}\n`
+						`For account type: ${identity.account_type}\n` +
+						`With new hash: ${identity.account_hash}\n`
 				);
 			} else {
 				console.log("Claim already exists");
@@ -170,7 +170,7 @@ async function processDataAtBlockHash(blockHash) {
 							};
 							await addCENNZnetClaim(identity);
 						} else {
-							console.log("Err: Account needs to be encoded with BlakeTwo256")
+							console.log("Err: Account needs to be encoded with BlakeTwo256");
 						}
 					}
 					// Twitter
@@ -185,7 +185,7 @@ async function processDataAtBlockHash(blockHash) {
 							};
 							await addCENNZnetClaim(identity);
 						} else {
-							console.log("Err: Account needs to be encoded with BlakeTwo256")
+							console.log("Err: Account needs to be encoded with BlakeTwo256");
 						}
 					}
 				}

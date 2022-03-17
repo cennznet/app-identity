@@ -4,6 +4,11 @@ import { SessionProvider } from "next-auth/react";
 import CssBaseline from "@mui/material/CssBaseline";
 import ThemeProvider from "@/libs/providers/ThemeProvider";
 import { CssGlobal, PageHeader } from "@/libs/components";
+import UserAgentProvider from "@/libs/providers/UserAgentProvider";
+import CENNZExtensionProvider from "@/libs/providers/CENNZExtensionProvider";
+import CENNZApiProvider from "@/libs/providers/CENNZApiProvider";
+import { CENNZ_API_URL } from "@/libs/constants";
+import { FAVICON } from "@/libs/assets/vectors";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	return (
@@ -11,13 +16,22 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 			<CssBaseline />
 			<ThemeProvider>
 				<CssGlobal />
-				<Head>
-					<title>CENNZnet Identity App</title>
-					<meta name="description" content="Identity App powered by CENNZnet" />
-					<link rel="icon" href="/favicon.svg" />
-				</Head>
-				<PageHeader />
-				<Component {...pageProps} />
+				<UserAgentProvider>
+					<CENNZExtensionProvider>
+						<CENNZApiProvider endpoint={CENNZ_API_URL}>
+							<Head>
+								<title>CENNZnet Identity App</title>
+								<meta
+									name="description"
+									content="Identity App powered by CENNZnet"
+								/>
+								<link rel="icon" href={FAVICON} />
+							</Head>
+							<PageHeader />
+							<Component {...pageProps} />
+						</CENNZApiProvider>
+					</CENNZExtensionProvider>
+				</UserAgentProvider>
 			</ThemeProvider>
 		</SessionProvider>
 	);

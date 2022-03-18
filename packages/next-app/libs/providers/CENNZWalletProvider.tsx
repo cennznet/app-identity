@@ -11,14 +11,10 @@ import {
 	useState,
 } from "react";
 import store from "store";
-import { useCENNZExtension } from "@/providers/CENNZExtensionProvider";
-import { useCENNZApi } from "@/providers/CENNZApiProvider";
-import fetchCENNZAssetBalances from "@/utils/fetchCENNZAssetBalances";
-import { CENNZAssetBalance } from "@/types";
+import { useCENNZExtension } from "@/libs/providers/CENNZExtensionProvider";
+import { useCENNZApi } from "@/libs/providers/CENNZApiProvider";
 
 type WalletContext = {
-	balances: CENNZAssetBalance[];
-	updateBalances: Function;
 	selectedAccount: InjectedAccountWithMeta;
 	wallet: InjectedExtension;
 	connectWallet: (callback?: () => void) => Promise<void>;
@@ -27,8 +23,6 @@ type WalletContext = {
 };
 
 const CENNZWalletContext = createContext<WalletContext>({
-	balances: null,
-	updateBalances: null,
 	selectedAccount: null,
 	wallet: null,
 	connectWallet: null,
@@ -43,7 +37,6 @@ export default function CENNZWalletProvider({
 }: PropsWithChildren<ProviderProps>) {
 	const { api } = useCENNZApi();
 	const { promptInstallExtension, extension, accounts } = useCENNZExtension();
-	const [balances, setBalances] = useState<CENNZAssetBalance[]>(null);
 	const [wallet, setWallet] = useState<InjectedExtension>(null);
 	const [selectedAccount, setAccount] = useState<InjectedAccountWithMeta>(null);
 
@@ -68,7 +61,6 @@ export default function CENNZWalletProvider({
 		store.remove("CENNZNET-ACCOUNT");
 		setWallet(null);
 		setAccount(null);
-		setBalances(null);
 	}, []);
 
 	const selectAccount = useCallback((account) => {
@@ -99,30 +91,9 @@ export default function CENNZWalletProvider({
 		selectAccount(matchedAccount);
 	}, [wallet, accounts, selectAccount]);
 
-	//3. Fetch asset balance
-	const updateBalances = useCallback(async () => {
-		if (!selectedAccount?.address || !api) return;
-		(async () => {
-			const balances = await fetchCENNZAssetBalances(
-				api,
-				selectedAccount.address
-			);
-
-			setBalances(balances);
-		})();
-	}, [selectedAccount, api]);
-
-	useEffect(() => {
-		(async () => {
-			await updateBalances();
-		})();
-	}, [updateBalances]);
-
 	return (
 		<CENNZWalletContext.Provider
 			value={{
-				balances,
-				updateBalances,
 				selectedAccount,
 				wallet,
 				connectWallet,

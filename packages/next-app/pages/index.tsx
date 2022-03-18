@@ -1,7 +1,12 @@
 import { FC, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { useSession } from "next-auth/react";
-import { AccountInput, DiscordButton, SignOut, TxButton, TwitterButton } from "@/libs/components";
+import {
+	AccountInput,
+	DiscordButton,
+	TxButton,
+	TwitterButton,
+} from "@/libs/components";
 import { AuthProvider } from "@/types";
 
 const Home: FC = () => {
@@ -18,10 +23,10 @@ const Home: FC = () => {
 	}, [session]);
 
 	return (
-		<div css={styles.root(authProvider)}>
+		<div css={styles.root(authProvider, !!session)}>
 			<div css={styles.auth}>
-				<DiscordButton />
-				<TwitterButton />
+				<DiscordButton switchProvider={setAuthProvider} />
+				<TwitterButton switchProvider={setAuthProvider} />
 			</div>
 
 			<div css={styles.input}>
@@ -34,7 +39,6 @@ const Home: FC = () => {
 				CENNZnetAddress={address}
 				sendTx={() => alert("linking account")}
 			/>
-			{!!session && <SignOut handle={session.user.name} />}
 			<br />
 		</div>
 	);
@@ -44,11 +48,12 @@ export default Home;
 
 const styles = {
 	root:
-		(authProvider: string) =>
+		(authProvider: string, session: boolean) =>
 		({ palette, shadows }) =>
 			css`
 				margin: 2em auto;
-				border: 1.5px solid ${palette.primary[authProvider]};
+				border: 1.5px solid
+					${session ? palette.primary[authProvider] : palette.primary.main};
 				border-radius: 4px;
 				width: 50%;
 				box-shadow: ${shadows[1]};

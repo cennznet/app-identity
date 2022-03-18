@@ -4,7 +4,9 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { DISCORD } from "@/libs/assets";
 
-const DiscordButton: FC = () => {
+const DiscordButton: FC<{ switchProvider: Function }> = ({
+	switchProvider,
+}) => {
 	const { data: session } = useSession();
 	const activeSession = session?.authProvider === "discord";
 
@@ -14,9 +16,12 @@ const DiscordButton: FC = () => {
 	);
 
 	const buttonClickHandler = useCallback(async () => {
-		if (!!session) return await signOut({ redirect: false });
-		await signIn("discord");
-	}, [session]);
+		if (!!session) {
+			switchProvider("discord");
+			await signOut({ redirect: false });
+		}
+		if (!activeSession) await signIn("discord");
+	}, [session, activeSession, switchProvider]);
 
 	const avatarLoader = ({ src, width }) => {
 		return `${src}?w=${width}`;

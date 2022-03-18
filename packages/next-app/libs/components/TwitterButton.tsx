@@ -4,14 +4,19 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { TWITTER } from "@/libs/assets";
 
-const TwitterButton: FC = () => {
+const TwitterButton: FC<{ switchProvider: Function }> = ({
+	switchProvider,
+}) => {
 	const { data: session } = useSession();
 	const activeSession = session?.authProvider === "twitter";
 
 	const buttonClickHandler = useCallback(async () => {
-		if (!!session) return await signOut({ redirect: false });
-		await signIn("twitter");
-	}, [session]);
+		if (!!session) {
+			switchProvider("twitter");
+			await signOut({ redirect: false });
+		}
+		if (!activeSession) await signIn("twitter");
+	}, [session, activeSession, switchProvider]);
 
 	return (
 		<button css={styles.buttonContainer(!!session)}>

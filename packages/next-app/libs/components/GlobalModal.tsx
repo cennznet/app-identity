@@ -1,4 +1,4 @@
-import { FC, useCallback } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { css } from "@emotion/react";
 import { CircularProgress, SelectChangeEvent } from "@mui/material";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
@@ -13,11 +13,15 @@ const GlobalModal: FC<{
 	modalStatus: ModalStatus;
 	setIsOpen: Function;
 }> = ({ isOpen, modalStatus, setIsOpen }) => {
-	const { selectAccount, selectedAccount, connectWallet } = useCENNZWallet();
+	const { selectAccount, selectedAccount, wallet, connectWallet } =
+		useCENNZWallet();
 	const { accounts } = useCENNZExtension();
 
+	useEffect(() => {
+		if (!wallet) (async () => await connectWallet())();
+	}, [wallet, connectWallet]);
+
 	const onAccountChange = async (event: SelectChangeEvent) => {
-		await connectWallet();
 		const value = event.target.value;
 		selectAccount(value);
 	};

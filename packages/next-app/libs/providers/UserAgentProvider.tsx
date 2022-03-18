@@ -1,5 +1,5 @@
 import { FC, createContext, useContext, useEffect, useState } from "react";
-import type { IBrowser, IOS, IDevice } from "ua-parser-js";
+import { IBrowser, IOS, IDevice } from "@/libs/types";
 
 type AgentContext = {
 	browser: IBrowser;

@@ -3,35 +3,34 @@ import { css } from "@emotion/react";
 import { Select, SelectChangeEvent, MenuItem, Theme } from "@mui/material";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { AccountIdenticon } from "@/libs/components/index";
+import { InjectedAccountWithMeta } from "@/libs/types";
+import { useCENNZExtension } from "@/libs/providers/CENNZExtensionProvider";
 
-const accounts = [
-	{ name: "dev", address: "5DVHuiWPrWomw1GxgXx6XuDCURPdDcv6YjLchobf156kwnZx" },
-	{ name: "dev2", address: "5HBGv1nW59xtp4yMZ6482DW6H4VgnfRY1ZkrEmv2L8qUWDkM" },
-];
-
-const NetworkSelect: FC<{
-	selectedAccount: string;
+const AccountSelect: FC<{
+	selectedAccount: InjectedAccountWithMeta;
 	onAccountChange: (event: SelectChangeEvent) => void;
 }> = ({ selectedAccount, onAccountChange }) => {
+	const { accounts } = useCENNZExtension();
+
 	return (
 		<div css={styles.root}>
 			<Select
 				css={styles.select}
-				value={selectedAccount}
+				value={selectedAccount?.meta.name}
+				defaultValue={accounts[0]?.meta.name}
 				onChange={onAccountChange}
 				MenuProps={{ sx: styles.selectDropdown as any }}
 				IconComponent={ExpandMore}
-				autoWidth={false}
 			>
 				{accounts.map((account, i) => (
-					<MenuItem key={i} value={account.name} css={styles.selectItem}>
+					<MenuItem key={i} value={account.meta.name} css={styles.selectItem}>
 						<AccountIdenticon
 							css={styles.accountIdenticon}
 							theme="beachball"
 							size={28}
 							value={account.address}
 						/>
-						<span>{account.name}</span>
+						<span>{account.meta.name}</span>
 					</MenuItem>
 				))}
 			</Select>
@@ -39,11 +38,10 @@ const NetworkSelect: FC<{
 	);
 };
 
-export default NetworkSelect;
+export default AccountSelect;
 
 export const styles = {
 	root: css`
-		width: auto;
 		border: 1px solid black;
 		border-radius: 4px;
 		overflow: hidden;
@@ -135,6 +133,6 @@ export const styles = {
 	`,
 	accountIdenticon: css`
 		align-self: center;
-		margin-right: 5px;
+		margin-right: 0.5em;
 	`,
 };

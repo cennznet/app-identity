@@ -1,7 +1,7 @@
 import { FC, useCallback, useMemo } from "react";
+import Image from "next/image";
 import { css } from "@emotion/react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import Image from "next/image";
 import { DISCORD } from "@/libs/assets";
 
 const DiscordButton: FC<{ switchProvider: Function }> = ({

@@ -1,7 +1,8 @@
 import {
+	Extension,
 	InjectedExtension,
 	InjectedAccountWithMeta,
-} from "@polkadot/extension-inject/types";
+} from "@/libs/types";
 import {
 	createContext,
 	PropsWithChildren,
@@ -10,7 +11,6 @@ import {
 	useState,
 	useCallback,
 } from "react";
-import type * as Extension from "@polkadot/extension-dapp";
 import { useUserAgent } from "@/libs/providers/UserAgentProvider";
 
 type ExtensionContext = typeof Extension & {

@@ -2,17 +2,21 @@ import { FC, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { useSession } from "next-auth/react";
 import {
-	AccountInput,
 	DiscordButton,
-	TxButton,
+	IdentityDetails,
 	TwitterButton,
+	TxButton,
 } from "@/libs/components";
-import { AuthProvider } from "@/types";
+import { AuthProvider, ModalStatus } from "@/libs/types";
+import GlobalModal from "@/libs/components/GlobalModal";
+import { useCENNZWallet } from "@/libs/providers/CENNZWalletProvider";
 
 const Home: FC = () => {
 	const { data: session } = useSession();
-	const [address, setAddress] = useState<string>();
+	const { selectedAccount } = useCENNZWallet();
 	const [authProvider, setAuthProvider] = useState<AuthProvider>();
+	const [modalOpen, setModalOpen] = useState<boolean>();
+	const [modalStatus, setModalStatus] = useState<ModalStatus>();
 
 	useEffect(() => {
 		if (!session) return setAuthProvider("discord");
@@ -23,24 +27,32 @@ const Home: FC = () => {
 	}, [session]);
 
 	return (
-		<div css={styles.root(authProvider, !!session)}>
-			<div css={styles.auth}>
-				<DiscordButton switchProvider={setAuthProvider} />
-				<TwitterButton switchProvider={setAuthProvider} />
-			</div>
+		<>
+			{modalOpen && (
+				<GlobalModal
+					isOpen={modalOpen}
+					modalStatus={modalStatus}
+					setIsOpen={setModalOpen}
+				/>
+			)}
+			<div css={styles.root(authProvider, !!session, !!selectedAccount)}>
+				<div css={styles.auth}>
+					<DiscordButton switchProvider={setAuthProvider} />
+					<TwitterButton switchProvider={setAuthProvider} />
+				</div>
 
-			<div css={styles.input}>
-				<p>Enter your CENNZnet Address:</p>
-				<AccountInput setAddress={setAddress} address={address} />
-			</div>
+				<IdentityDetails />
 
-			<TxButton
-				authProvider={authProvider}
-				CENNZnetAddress={address}
-				sendTx={() => alert("linking account")}
-			/>
-			<br />
-		</div>
+				<TxButton
+					authProvider={authProvider}
+					CENNZnetAddress={selectedAccount?.address}
+					sendTx={() => alert("linking account")}
+					setModalOpen={setModalOpen}
+					setModalStatus={setModalStatus}
+				/>
+				<br />
+			</div>
+		</>
 	);
 };
 
@@ -48,7 +60,7 @@ export default Home;
 
 const styles = {
 	root:
-		(authProvider: string, session: boolean) =>
+		(authProvider: string, session: boolean, selectedAccount: boolean) =>
 		({ palette, shadows }) =>
 			css`
 				margin: 2em auto;
@@ -57,22 +69,11 @@ const styles = {
 				border-radius: 4px;
 				width: 50%;
 				box-shadow: ${shadows[1]};
+				height: ${selectedAccount ? "23em" : "21.5em"};
 			`,
 	auth: css`
 		width: 100%;
 		display: inline-flex;
 		justify-content: space-between;
-	`,
-	input: css`
-		width: 90%;
-		margin: 2em auto;
-		padding-bottom: 1em;
-		font-size: 18px;
-
-		p {
-			font-weight: bold;
-			letter-spacing: 0.3px;
-			line-height: 125%;
-		}
 	`,
 };

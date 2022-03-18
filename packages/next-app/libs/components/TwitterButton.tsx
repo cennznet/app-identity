@@ -1,7 +1,7 @@
 import { FC, useCallback } from "react";
+import Image from "next/image";
 import { css } from "@emotion/react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import Image from "next/image";
 import { TWITTER } from "@/libs/assets";
 
 const TwitterButton: FC<{ switchProvider: Function }> = ({

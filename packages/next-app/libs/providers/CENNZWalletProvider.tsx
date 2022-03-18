@@ -1,7 +1,4 @@
-import {
-	InjectedExtension,
-	InjectedAccountWithMeta,
-} from "@polkadot/extension-inject/types";
+import { InjectedExtension, InjectedAccountWithMeta } from "@/libs/types";
 import {
 	createContext,
 	PropsWithChildren,
@@ -19,7 +16,7 @@ type WalletContext = {
 	wallet: InjectedExtension;
 	connectWallet: (callback?: () => void) => Promise<void>;
 	disconnectWallet: () => void;
-	selectAccount: (account: InjectedAccountWithMeta) => void;
+	selectAccount: (accountName: string) => void;
 };
 
 const CENNZWalletContext = createContext<WalletContext>({
@@ -63,10 +60,17 @@ export default function CENNZWalletProvider({
 		setAccount(null);
 	}, []);
 
-	const selectAccount = useCallback((account) => {
-		setAccount(account);
-		store.set("CENNZNET-ACCOUNT", account);
-	}, []);
+	const selectAccount = useCallback(
+		(accountName: string) => {
+			if (!accounts) return;
+			const account = accounts.find(
+				(account) => account.meta.name === accountName
+			);
+			setAccount(account);
+			store.set("CENNZNET-ACCOUNT", account);
+		},
+		[accounts]
+	);
 
 	// 1. Restore the wallet from the store if it exists
 	useEffect(() => {
@@ -77,19 +81,19 @@ export default function CENNZWalletProvider({
 	}, [extension, disconnectWallet]);
 
 	// 2. Pick the right account once a `wallet` has been set
-	useEffect(() => {
-		if (!wallet || !accounts || !selectAccount) return;
-
-		const storedAccount = store.get("CENNZNET-ACCOUNT");
-		if (!storedAccount) return selectAccount(accounts[0]);
-
-		const matchedAccount = accounts.find(
-			(account) => account.address === storedAccount.address
-		);
-		if (!matchedAccount) return selectAccount(accounts[0]);
-
-		selectAccount(matchedAccount);
-	}, [wallet, accounts, selectAccount]);
+	// useEffect(() => {
+	// 	if (!wallet || !accounts || !selectAccount) return;
+	//
+	// 	const storedAccount = store.get("CENNZNET-ACCOUNT");
+	// 	if (!storedAccount) return selectAccount(accounts[0]);
+	//
+	// 	const matchedAccount = accounts.find(
+	// 		(account) => account.address === storedAccount.address
+	// 	);
+	// 	if (!matchedAccount) return selectAccount(accounts[0]);
+	//
+	// 	selectAccount(matchedAccount);
+	// }, [wallet, accounts, selectAccount]);
 
 	return (
 		<CENNZWalletContext.Provider

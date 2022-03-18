@@ -1,7 +1,7 @@
 import { FC } from "react";
 import Image from "next/image";
 import { css } from "@emotion/react";
-import { CENNZnetBlue } from "@/libs/assets/vectors";
+import { CENNZnetBlue } from "@/libs/assets";
 
 const Home: FC = () => {
 	return (

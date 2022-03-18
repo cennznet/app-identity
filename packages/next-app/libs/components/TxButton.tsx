@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import { signIn, useSession } from "next-auth/react";
 import { AuthProvider } from "@/types";
 
-const AuthTxButton: FC<{
+const TxButton: FC<{
 	authProvider: AuthProvider;
 	CENNZnetAddress: string;
 	sendTx: MouseEventHandler<HTMLDivElement>;
@@ -35,7 +35,7 @@ const AuthTxButton: FC<{
 	);
 };
 
-export default AuthTxButton;
+export default TxButton;
 
 export const styles = {
 	button:

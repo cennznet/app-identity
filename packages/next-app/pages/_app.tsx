@@ -8,7 +8,7 @@ import UserAgentProvider from "@/libs/providers/UserAgentProvider";
 import CENNZExtensionProvider from "@/libs/providers/CENNZExtensionProvider";
 import CENNZApiProvider from "@/libs/providers/CENNZApiProvider";
 import { CENNZ_API_URL } from "@/libs/constants";
-import { FAVICON } from "@/libs/assets/vectors";
+import { FAVICON } from "@/libs/assets";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	return (

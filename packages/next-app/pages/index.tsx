@@ -1,7 +1,7 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { css } from "@emotion/react";
-import { signOut, useSession } from "next-auth/react";
-import { AccountInput, AuthTxButton, SignOut } from "@/libs/components";
+import { useSession } from "next-auth/react";
+import { AccountInput, DiscordButton, SignOut, TxButton, TwitterButton } from "@/libs/components";
 import { AuthProvider } from "@/types";
 
 const Home: FC = () => {
@@ -17,21 +17,11 @@ const Home: FC = () => {
 			: setAuthProvider("discord");
 	}, [session]);
 
-	const switchProvider = useCallback(
-		async (provider: AuthProvider) => {
-			if (!!session) await signOut({ redirect: false });
-			setAuthProvider(provider);
-		},
-		[session]
-	);
-
 	return (
 		<div css={styles.root(authProvider)}>
-			<div css={styles.discord}>
-				<span onClick={() => switchProvider("discord")}>discord</span>
-			</div>
-			<div css={styles.twitter}>
-				<span onClick={() => switchProvider("twitter")}>twitter</span>
+			<div css={styles.auth}>
+				<DiscordButton />
+				<TwitterButton />
 			</div>
 
 			<div css={styles.input}>
@@ -39,7 +29,7 @@ const Home: FC = () => {
 				<AccountInput setAddress={setAddress} address={address} />
 			</div>
 
-			<AuthTxButton
+			<TxButton
 				authProvider={authProvider}
 				CENNZnetAddress={address}
 				sendTx={() => alert("linking account")}
@@ -63,35 +53,10 @@ const styles = {
 				width: 50%;
 				box-shadow: ${shadows[1]};
 			`,
-	discord: ({ palette }) => css`
-		margin-left: 1em;
-		font-size: 20px;
-		cursor: pointer;
-		width: 80px;
-		margin-top: 0.8em;
-
-		span {
-			color: ${palette.primary.discord};
-			font-weight: bold;
-			letter-spacing: 0.3px;
-			line-height: 125%;
-			text-transform: uppercase;
-		}
-	`,
-	twitter: ({ palette }) => css`
-		margin-right: 1em;
-		font-size: 20px;
-		float: right;
-		cursor: pointer;
-		margin-top: -1.25em;
-
-		span {
-			color: ${palette.primary.twitter};
-			font-weight: bold;
-			letter-spacing: 0.3px;
-			line-height: 125%;
-			text-transform: uppercase;
-		}
+	auth: css`
+		width: 100%;
+		display: inline-flex;
+		justify-content: space-between;
 	`,
 	input: css`
 		width: 90%;

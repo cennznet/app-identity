@@ -69,7 +69,7 @@ const styles = {
 				border-radius: 4px;
 				width: 50%;
 				box-shadow: ${shadows[1]};
-				height: ${selectedAccount ? "23em" : "21.5em"};
+				height: ${selectedAccount && session ? "23em" : "21.5em"};
 			`,
 	auth: css`
 		width: 100%;

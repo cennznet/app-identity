@@ -67,6 +67,10 @@ const styles = {
 				border-radius: 4px;
 				width: 40em;
 				box-shadow: ${shadows[1]};
+
+				@media (max-width: 500px) {
+					width: 20em;
+				}
 			`,
 	container: css`
 		width: 100%;

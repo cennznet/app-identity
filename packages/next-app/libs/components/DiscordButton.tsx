@@ -60,9 +60,6 @@ export const styles = {
 				background-color: ${palette.primary.discord};
 				border: transparent;
 				box-shadow: 4px 8px 8px rgb(17 48 255 / 10%);
-				@media (max-width: 500px) {
-					margin: 0;
-				}
 			`,
 	authButton: css`
 		border-radius: 4px;

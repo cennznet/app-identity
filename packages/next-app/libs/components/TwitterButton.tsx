@@ -43,9 +43,6 @@ export const styles = {
 		({ palette }) =>
 			css`
 				cursor: pointer;
-				//position: absolute;
-				//top: 4.5em;
-				//right: 1em;
 				float: right;
 				border-radius: 4px;
 				display: flex;
@@ -55,9 +52,6 @@ export const styles = {
 				background-color: ${palette.primary.twitter};
 				border: transparent;
 				box-shadow: 4px 8px 8px rgb(17 48 255 / 10%);
-				@media (max-width: 500px) {
-					margin: 0;
-				}
 			`,
 	authButton: css`
 		display: inline-flex;

@@ -16,13 +16,12 @@ const AccountSelect: FC<{
 		<div css={styles.root}>
 			<Select
 				css={styles.select}
-				value={selectedAccount?.meta.name}
-				defaultValue={accounts[0]?.meta.name}
+				value={selectedAccount?.meta.name || accounts[0]?.meta.name}
 				onChange={onAccountChange}
 				MenuProps={{ sx: styles.selectDropdown as any }}
 				IconComponent={ExpandMore}
 			>
-				{accounts.map((account, i) => (
+				{accounts?.map((account, i) => (
 					<MenuItem key={i} value={account.meta.name} css={styles.selectItem}>
 						<AccountIdenticon
 							css={styles.accountIdenticon}

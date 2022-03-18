@@ -32,7 +32,7 @@ const GlobalModal: FC<{
 	}, [accounts, selectAccount, selectedAccount, setIsOpen]);
 
 	return (
-		<div css={styles.root(isOpen, !!selectedAccount)}>
+		<div css={styles.root(isOpen)}>
 			{!!modalStatus && (
 				<div css={styles.contentContainer}>
 					{modalStatus.status === "in-progress" && (
@@ -76,10 +76,10 @@ const GlobalModal: FC<{
 export default GlobalModal;
 
 const styles = {
-	root: (show: boolean, selectedAccount: boolean) =>
+	root: (show: boolean) =>
 		css`
 			position: absolute;
-			inset: 0;
+			inset: 1px;
 			background-color: rgba(255, 255, 255, 0.9);
 			z-index: 100;
 			opacity: ${show ? 1 : 0};
@@ -91,10 +91,8 @@ const styles = {
 			backdrop-filter: blur(2px);
 			padding: 5em;
 			text-align: center;
+			box-sizing: border-box;
 			font-size: 14px;
-			width: 48%;
-			top: 11em;
-			height: ${selectedAccount ? "25em" : "23em"};
 			margin: 0 auto;
 		`,
 	status: css`

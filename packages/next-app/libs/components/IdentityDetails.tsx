@@ -23,8 +23,8 @@ export default IdentityDetails;
 export const styles = {
 	root: css`
 		width: 90%;
-		margin: 0 auto;
-		height: 11em;
+		margin: 0 auto 2em;
+		height: auto;
 
 		b {
 			font-size: 20px;

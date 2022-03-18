@@ -27,15 +27,13 @@ const Home: FC = () => {
 	}, [session]);
 
 	return (
-		<>
-			{modalOpen && (
+		<div css={styles.root(authProvider, !!session)}>
+			<div css={styles.container}>
 				<GlobalModal
 					isOpen={modalOpen}
 					modalStatus={modalStatus}
 					setIsOpen={setModalOpen}
 				/>
-			)}
-			<div css={styles.root(authProvider, !!session, !!selectedAccount)}>
 				<div css={styles.auth}>
 					<DiscordButton switchProvider={setAuthProvider} />
 					<TwitterButton switchProvider={setAuthProvider} />
@@ -52,7 +50,7 @@ const Home: FC = () => {
 				/>
 				<br />
 			</div>
-		</>
+		</div>
 	);
 };
 
@@ -60,17 +58,21 @@ export default Home;
 
 const styles = {
 	root:
-		(authProvider: string, session: boolean, selectedAccount: boolean) =>
+		(authProvider: string, session: boolean) =>
 		({ palette, shadows }) =>
 			css`
 				margin: 2em auto;
 				border: 1.5px solid
 					${session ? palette.primary[authProvider] : palette.primary.main};
 				border-radius: 4px;
-				width: 50%;
+				width: 40em;
 				box-shadow: ${shadows[1]};
-				height: ${selectedAccount && session ? "23em" : "21.5em"};
 			`,
+	container: css`
+		width: 100%;
+		margin: 0 auto;
+		position: relative;
+	`,
 	auth: css`
 		width: 100%;
 		display: inline-flex;

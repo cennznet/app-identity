@@ -19,8 +19,8 @@ const TxButton: FC<{
 		setModalOpen(true);
 	};
 
-	if (session?.validAccount) {
-		if (selectedAccount)
+	if (selectedAccount) {
+		if (session?.validAccount)
 			return (
 				<div>
 					<div css={styles.button(authProvider)} onClick={sendTx}>
@@ -35,20 +35,22 @@ const TxButton: FC<{
 			);
 
 		return (
-			<>
-				<div
-					css={styles.button(authProvider, true)}
-					onClick={selectCENNZAccount}
-				>
-					<p>CONNECT CENNZnet WALLET</p>
+			<div>
+				<div css={styles.notButton}>
+					<p>PLEASE SIGN IN WITH A VALID PROVIDER</p>
 				</div>
-			</>
+				<div css={styles.changeAccount}>
+					<span onClick={selectCENNZAccount}>
+						Switch from `{selectedAccount.meta.name}`
+					</span>
+				</div>
+			</div>
 		);
 	}
 
 	return (
-		<div css={styles.notButton}>
-			<p>PLEASE SIGN IN WITH A VALID ACCOUNT</p>
+		<div css={styles.button(authProvider, true)} onClick={selectCENNZAccount}>
+			<p>CONNECT CENNZnet WALLET</p>
 		</div>
 	);
 };

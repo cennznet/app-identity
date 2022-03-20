@@ -12,7 +12,7 @@ const DiscordButton: FC<{ switchProvider: Function }> = ({
 	const { data: session } = useSession();
 	const [popup, setPopup] = useState<boolean>(false);
 	const [authProvider, setAuthProvider] = useLocalStorage("authProvider", "");
-	const activeSession = session?.authProvider === "discord";
+	const activeSession = session && !session.user.name.includes("@");
 
 	const imageSrc = useMemo(
 		() => (!!session?.user?.image ? session.user.image : DISCORD),
@@ -49,7 +49,7 @@ const DiscordButton: FC<{ switchProvider: Function }> = ({
 						height={20}
 						css={styles.logo}
 					/>
-					{activeSession && <p>{session.user.name}</p>}
+					{activeSession && <p>{session?.user.name}</p>}
 					<b>{activeSession ? "sign out" : "sign in"}</b>
 				</div>
 			</button>

@@ -12,7 +12,7 @@ const TwitterButton: FC<{ switchProvider: Function }> = ({
 	const { data: session } = useSession();
 	const [popup, setPopup] = useState<boolean>(false);
 	const [authProvider, setAuthProvider] = useLocalStorage("authProvider", "");
-	const activeSession = session?.authProvider === "twitter";
+	const activeSession = session && session.user.name.includes("@");
 
 	const buttonClickHandler = useCallback(async () => {
 		if (!!session) {
@@ -39,7 +39,7 @@ const TwitterButton: FC<{ switchProvider: Function }> = ({
 						alt="twitter-logo"
 						css={styles.logo}
 					/>
-					{activeSession && <p>{session.user.name}</p>}
+					{activeSession && <p>{session?.user.name}</p>}
 					<b>{activeSession ? "sign out" : "sign in"}</b>
 				</div>
 			</button>

@@ -1,8 +1,9 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+import { MONGO_DB_PASSWORD } from "@/libs/constants";
 
-const MONGODB_URI = `mongodb+srv://identity-background-service:${process.env.MONGO_DB_PASSWORD}@cennznet-identity.yqg3d.mongodb.net/identity-claims?retryWrites=true&w=majority`;
+const MONGODB_URI = `mongodb+srv://identity-background-service:${MONGO_DB_PASSWORD}@cennznet-identity.yqg3d.mongodb.net/identity-claims?retryWrites=true&w=majority`;
 
-if (!process.env.MONGO_DB_PASSWORD) {
+if (!MONGO_DB_PASSWORD) {
 	throw new Error(
 		"Please define the MONGO_DB_PASSWORD environment variable inside .env"
 	);

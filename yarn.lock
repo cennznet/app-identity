@@ -3110,6 +3110,7 @@ __metadata:
     dotenv: ^16.0.0
     mongoose: ^6.2.6
     ts-node: ^10.7.0
+    tsconfig-paths: ^3.14.0
     tslib: ^2.3.1
     typescript: ^4.6.2
   languageName: unknown
@@ -5042,7 +5043,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfig-paths@npm:^3.12.0, tsconfig-paths@npm:^3.9.0":
+"tsconfig-paths@npm:^3.12.0, tsconfig-paths@npm:^3.14.0, tsconfig-paths@npm:^3.9.0":
   version: 3.14.0
   resolution: "tsconfig-paths@npm:3.14.0"
   dependencies:

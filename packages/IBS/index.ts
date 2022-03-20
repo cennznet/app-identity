@@ -1,13 +1,12 @@
+import * as dotenv from "dotenv";
+dotenv.config();
 import { Api } from "@cennznet/api";
 import { Keyring } from "@polkadot/keyring";
 import { cryptoWaitReady, blake2AsHex } from "@polkadot/util-crypto";
-import * as dotenv from "dotenv";
-dotenv.config();
-import dbConnect from "./libs/db/dbConnect";
-import CennznetClaims from "./libs/db/models/cennznetclaims";
-import AccountClaims from "./libs/db/models/accountclaims";
-
-const provider = "ws://localhost:9944";
+import dbConnect from "@/libs/db/dbConnect";
+import CennznetClaims from "@/libs/db/models/cennznetclaims";
+import AccountClaims from "@/libs/db/models/accountclaims";
+import { CENNZ_PROVIDER, REG_INDEX } from "@/libs/constants";
 
 let api;
 let keyring;
@@ -29,9 +28,9 @@ async function initialise() {
 		},
 	};
 	await cryptoWaitReady();
-	api = await Api.create({ provider, types });
+	api = await Api.create({ provider: CENNZ_PROVIDER, types });
 	keyring = new Keyring({ type: "sr25519" });
-	console.log(`Connected to CENNZnet network ${provider}`);
+	console.log(`Connected to CENNZnet network ${CENNZ_PROVIDER}`);
 	eve = keyring.addFromUri("//Eve");
 }
 
@@ -120,7 +119,7 @@ async function submitJudgement(target: string) {
 	try {
 		const judgement = "KnownGood";
 		const extrinsic = api.tx.identity.provideJudgement(
-			process.env.REG_INDEX,
+			REG_INDEX,
 			target,
 			judgement
 		);

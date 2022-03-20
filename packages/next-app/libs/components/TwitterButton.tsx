@@ -1,37 +1,49 @@
-import { FC, useCallback } from "react";
+import { FC, useCallback, useState } from "react";
 import Image from "next/image";
 import { css } from "@emotion/react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { TWITTER } from "@/libs/assets";
+import useLocalStorage from "@/libs/hooks/useLocalStorage";
+import NewWindow from "react-new-window";
 
 const TwitterButton: FC<{ switchProvider: Function }> = ({
 	switchProvider,
 }) => {
 	const { data: session } = useSession();
+	const [popup, setPopup] = useState<boolean>(false);
+	const [authProvider, setAuthProvider] = useLocalStorage("authProvider", "");
 	const activeSession = session?.authProvider === "twitter";
 
 	const buttonClickHandler = useCallback(async () => {
 		if (!!session) {
-			switchProvider("twitter");
+			switchProvider(authProvider);
 			await signOut({ redirect: false });
 		}
-		if (!activeSession) await signIn("twitter");
-	}, [session, activeSession, switchProvider]);
+		if (!activeSession) {
+			setAuthProvider("twitter");
+			await setPopup(true);
+		}
+	}, [session, activeSession, switchProvider, authProvider, setAuthProvider]);
 
 	return (
-		<button css={styles.buttonContainer(!!session)}>
-			<div css={styles.authButton} onClick={buttonClickHandler}>
-				<Image
-					src={TWITTER}
-					width={20}
-					height={20}
-					alt="twitter-logo"
-					css={styles.logo}
-				/>
-				{activeSession && <p>{session.user.name}</p>}
-				<b>{activeSession ? "sign out" : "sign in"}</b>
-			</div>
-		</button>
+		<div>
+			{popup && !session && (
+				<NewWindow url="/sign-in" onUnload={() => setPopup(false)} />
+			)}
+			<button css={styles.buttonContainer(!!session)}>
+				<div css={styles.authButton} onClick={buttonClickHandler}>
+					<Image
+						src={TWITTER}
+						width={20}
+						height={20}
+						alt="twitter-logo"
+						css={styles.logo}
+					/>
+					{activeSession && <p>{session.user.name}</p>}
+					<b>{activeSession ? "sign out" : "sign in"}</b>
+				</div>
+			</button>
+		</div>
 	);
 };
 

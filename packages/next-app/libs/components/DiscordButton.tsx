@@ -1,13 +1,17 @@
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
+import NewWindow from "react-new-window";
 import Image from "next/image";
 import { css } from "@emotion/react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { DISCORD } from "@/libs/assets";
+import useLocalStorage from "@/libs/hooks/useLocalStorage";
 
 const DiscordButton: FC<{ switchProvider: Function }> = ({
 	switchProvider,
 }) => {
 	const { data: session } = useSession();
+	const [popup, setPopup] = useState<boolean>(false);
+	const [authProvider, setAuthProvider] = useLocalStorage("authProvider", "");
 	const activeSession = session?.authProvider === "discord";
 
 	const imageSrc = useMemo(
@@ -17,31 +21,39 @@ const DiscordButton: FC<{ switchProvider: Function }> = ({
 
 	const buttonClickHandler = useCallback(async () => {
 		if (!!session) {
-			switchProvider("discord");
+			switchProvider(authProvider);
 			await signOut({ redirect: false });
 		}
-		if (!activeSession) await signIn("discord");
-	}, [session, activeSession, switchProvider]);
+		if (!activeSession) {
+			setAuthProvider("discord");
+			await setPopup(true);
+		}
+	}, [session, activeSession, switchProvider, authProvider, setAuthProvider]);
 
 	const avatarLoader = ({ src, width }) => {
 		return `${src}?w=${width}`;
 	};
 
 	return (
-		<button css={styles.buttonContainer(!!session)}>
-			<div css={styles.authButton} onClick={buttonClickHandler}>
-				<Image
-					loader={!!imageSrc ? avatarLoader : null}
-					src={imageSrc}
-					alt="discord-avatar"
-					width={20}
-					height={20}
-					css={styles.logo}
-				/>
-				{activeSession && <p>{session.user.name}</p>}
-				<b>{activeSession ? "sign out" : "sign in"}</b>
-			</div>
-		</button>
+		<div>
+			{popup && !session && (
+				<NewWindow url="/sign-in" onUnload={() => setPopup(false)} />
+			)}
+			<button css={styles.buttonContainer(!!session)}>
+				<div css={styles.authButton} onClick={buttonClickHandler}>
+					<Image
+						loader={!!imageSrc ? avatarLoader : null}
+						src={imageSrc}
+						alt="discord-avatar"
+						width={20}
+						height={20}
+						css={styles.logo}
+					/>
+					{activeSession && <p>{session.user.name}</p>}
+					<b>{activeSession ? "sign out" : "sign in"}</b>
+				</div>
+			</button>
+		</div>
 	);
 };
 

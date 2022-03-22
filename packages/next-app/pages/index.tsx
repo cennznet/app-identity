@@ -9,12 +9,10 @@ import {
 } from "@/libs/components";
 import { AuthProvider, ModalStatus } from "@/libs/types";
 import GlobalModal from "@/libs/components/GlobalModal";
-import { useCENNZWallet } from "@/libs/providers/CENNZWalletProvider";
 import useLocalStorage from "@/libs/hooks/useLocalStorage";
 
 const Home: FC = () => {
 	const { data: session } = useSession();
-	const { selectedAccount } = useCENNZWallet();
 	const [authProvider] = useLocalStorage<AuthProvider>(
 		"authProvider",
 		!!session
@@ -37,11 +35,7 @@ const Home: FC = () => {
 
 				<IdentityDetails />
 
-				<TxButton
-					CENNZnetAddress={selectedAccount?.address}
-					setModalOpen={setModalOpen}
-					setModalStatus={setModalStatus}
-				/>
+				<TxButton setModalOpen={setModalOpen} setModalStatus={setModalStatus} />
 				<br />
 			</div>
 		</div>

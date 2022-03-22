@@ -5,13 +5,15 @@ import { signOut, useSession } from "next-auth/react";
 import { TWITTER } from "@/libs/assets";
 import useLocalStorage from "@/libs/hooks/useLocalStorage";
 import NewWindow from "react-new-window";
+import { AuthProvider } from "@/libs/types";
 
 const TwitterButton: FC<{ switchProvider: Function }> = ({
 	switchProvider,
 }) => {
 	const { data: session } = useSession();
 	const [popup, setPopup] = useState<boolean>(false);
-	const [authProvider, setAuthProvider] = useLocalStorage("authProvider", "");
+	const [authProvider, setAuthProvider] =
+		useLocalStorage<AuthProvider>("authProvider");
 	const activeSession = session && session.user.name.includes("@");
 
 	const buttonClickHandler = useCallback(async () => {

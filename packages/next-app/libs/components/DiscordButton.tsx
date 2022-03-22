@@ -5,13 +5,15 @@ import { css } from "@emotion/react";
 import { signOut, useSession } from "next-auth/react";
 import { DISCORD } from "@/libs/assets";
 import useLocalStorage from "@/libs/hooks/useLocalStorage";
+import { AuthProvider } from "@/libs/types";
 
 const DiscordButton: FC<{ switchProvider: Function }> = ({
 	switchProvider,
 }) => {
 	const { data: session } = useSession();
 	const [popup, setPopup] = useState<boolean>(false);
-	const [authProvider, setAuthProvider] = useLocalStorage("authProvider", "");
+	const [authProvider, setAuthProvider] =
+		useLocalStorage<AuthProvider>("authProvider");
 	const activeSession = session && !session.user.name.includes("@");
 
 	const imageSrc = useMemo(

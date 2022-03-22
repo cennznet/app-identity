@@ -94,6 +94,7 @@ const TxButton: FC<{
 				)
 				.catch((err) => {
 					setModalStatus({ status: "fail", message: err.message });
+					setModalOpen(true);
 					reject(err);
 				});
 		});

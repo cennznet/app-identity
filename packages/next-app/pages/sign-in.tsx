@@ -7,7 +7,10 @@ import { AuthProvider } from "@/libs/types";
 
 const SignInPage: VFC = () => {
 	const { data: session, status } = useSession();
-	const [authProvider] = useLocalStorage<AuthProvider>("authProvider");
+	const [authProvider] = useLocalStorage<AuthProvider>(
+		"authProvider",
+		!!session
+	);
 
 	useEffect(() => {
 		if (status !== "loading" && !session) void signIn(authProvider);

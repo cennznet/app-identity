@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { css } from "@emotion/react";
 import { useSession } from "next-auth/react";
 import {
@@ -10,21 +10,17 @@ import {
 import { AuthProvider, ModalStatus } from "@/libs/types";
 import GlobalModal from "@/libs/components/GlobalModal";
 import { useCENNZWallet } from "@/libs/providers/CENNZWalletProvider";
+import useLocalStorage from "@/libs/hooks/useLocalStorage";
 
 const Home: FC = () => {
 	const { data: session } = useSession();
 	const { selectedAccount } = useCENNZWallet();
-	const [authProvider, setAuthProvider] = useState<AuthProvider>();
+	const [authProvider] = useLocalStorage<AuthProvider>(
+		"authProvider",
+		!!session
+	);
 	const [modalOpen, setModalOpen] = useState<boolean>();
 	const [modalStatus, setModalStatus] = useState<ModalStatus>();
-
-	useEffect(() => {
-		if (!session) return setAuthProvider("discord");
-
-		session.user.name.includes("@")
-			? setAuthProvider("twitter")
-			: setAuthProvider("discord");
-	}, [session]);
 
 	return (
 		<div css={styles.root(authProvider, !!session)}>
@@ -35,16 +31,14 @@ const Home: FC = () => {
 					setIsOpen={setModalOpen}
 				/>
 				<div css={styles.auth}>
-					<DiscordButton switchProvider={setAuthProvider} />
-					<TwitterButton switchProvider={setAuthProvider} />
+					<DiscordButton />
+					<TwitterButton />
 				</div>
 
 				<IdentityDetails />
 
 				<TxButton
-					authProvider={authProvider}
 					CENNZnetAddress={selectedAccount?.address}
-					sendTx={() => alert("linking account")}
 					setModalOpen={setModalOpen}
 					setModalStatus={setModalStatus}
 				/>

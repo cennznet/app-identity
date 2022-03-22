@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from "react";
+import { VFC, useCallback, useMemo, useState } from "react";
 import NewWindow from "react-new-window";
 import Image from "next/image";
 import { css } from "@emotion/react";
@@ -7,14 +7,14 @@ import { DISCORD } from "@/libs/assets";
 import useLocalStorage from "@/libs/hooks/useLocalStorage";
 import { AuthProvider } from "@/libs/types";
 
-const DiscordButton: FC<{ switchProvider: Function }> = ({
-	switchProvider,
-}) => {
+const DiscordButton: VFC = () => {
 	const { data: session } = useSession();
 	const [popup, setPopup] = useState<boolean>(false);
-	const [authProvider, setAuthProvider] =
-		useLocalStorage<AuthProvider>("authProvider");
-	const activeSession = session && !session.user.name.includes("@");
+	const [authProvider, setAuthProvider] = useLocalStorage<AuthProvider>(
+		"authProvider",
+		!!session
+	);
+	const activeSession = authProvider === "discord";
 
 	const imageSrc = useMemo(
 		() => (!!session?.user?.image ? session.user.image : DISCORD),
@@ -23,14 +23,13 @@ const DiscordButton: FC<{ switchProvider: Function }> = ({
 
 	const buttonClickHandler = useCallback(async () => {
 		if (!!session) {
-			switchProvider(authProvider);
 			await signOut({ redirect: false });
 		}
 		if (!activeSession) {
 			setAuthProvider("discord");
-			await setPopup(true);
+			setPopup(true);
 		}
-	}, [session, activeSession, switchProvider, authProvider, setAuthProvider]);
+	}, [session, activeSession, setAuthProvider]);
 
 	const avatarLoader = ({ src, width }) => {
 		return `${src}?w=${width}`;

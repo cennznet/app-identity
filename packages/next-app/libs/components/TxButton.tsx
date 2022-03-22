@@ -1,29 +1,86 @@
-import { FC, MouseEventHandler } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { useSession } from "next-auth/react";
+import { blake2AsHex } from "@polkadot/util-crypto";
 import { AuthProvider } from "@/libs/types";
 import { useCENNZWallet } from "@/libs/providers/CENNZWalletProvider";
+import { useCENNZApi } from "@/libs/providers/CENNZApiProvider";
+import { SubmittableExtrinsic } from "@cennznet/api/types";
+import useLocalStorage from "@/libs/hooks/useLocalStorage";
 
 const TxButton: FC<{
-	authProvider: AuthProvider;
 	CENNZnetAddress: string;
-	sendTx: MouseEventHandler<HTMLDivElement>;
 	setModalOpen: Function;
 	setModalStatus: Function;
-}> = ({ authProvider, sendTx, setModalOpen, setModalStatus }) => {
+}> = ({ setModalOpen, setModalStatus }) => {
 	const { data: session } = useSession();
-	const { selectedAccount } = useCENNZWallet();
+	const [authProvider] = useLocalStorage<AuthProvider>(
+		"authProvider",
+		!!session
+	);
+	const [extrinsic, setExtrinsic] =
+		useState<SubmittableExtrinsic<"promise", any>>();
+	const { api } = useCENNZApi();
+	const { selectedAccount, wallet } = useCENNZWallet();
+	const signer = wallet?.signer;
+
+	useEffect(() => {
+		if (!api || !session?.user.name || !authProvider) return;
+
+		let tx: SubmittableExtrinsic<"promise", any>;
+		if (authProvider === "discord") {
+			tx = api.tx.identity.setIdentity({
+				info: {
+					riot: blake2AsHex(session.user.name),
+				},
+			});
+		}
+
+		if (authProvider === "twitter") {
+			tx = api.tx.identity.setIdentity({
+				info: {
+					additional: [],
+					display: { None: null },
+					legal: { None: null },
+					web: { None: null },
+					riot: { None: null },
+					email: { None: null },
+					pgpFingerprint: null,
+					image: { None: null },
+					twitter: {
+						BlakeTwo256: blake2AsHex(session.user.name.split("@")[1]),
+					},
+				},
+			});
+		}
+
+		console.log("tx", tx);
+
+		if (tx) setExtrinsic(tx);
+	}, [authProvider, api, session, setExtrinsic]);
 
 	const selectCENNZAccount = () => {
 		setModalStatus({ status: "connect-wallet", message: "" });
 		setModalOpen(true);
 	};
 
+	const signAndSendTx = useCallback(async () => {
+		if (!api || !selectedAccount || !signer || !extrinsic) return;
+
+		return new Promise((resolve, reject) => {
+			extrinsic
+				.signAndSend(selectedAccount.address, { signer }, (yeet) => {
+					resolve(yeet);
+				})
+				.catch((err) => reject(err));
+		});
+	}, [api, selectedAccount, signer, extrinsic]);
+
 	if (selectedAccount) {
 		if (session?.validAccount)
 			return (
 				<div>
-					<div css={styles.button(authProvider)} onClick={sendTx}>
+					<div css={styles.button(authProvider)} onClick={signAndSendTx}>
 						<p>
 							link {authProvider} with `{selectedAccount.meta.name}`
 						</p>

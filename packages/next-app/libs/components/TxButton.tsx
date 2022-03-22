@@ -9,7 +9,6 @@ import { SubmittableExtrinsic } from "@cennznet/api/types";
 import useLocalStorage from "@/libs/hooks/useLocalStorage";
 
 const TxButton: FC<{
-	CENNZnetAddress: string;
 	setModalOpen: Function;
 	setModalStatus: Function;
 }> = ({ setModalOpen, setModalStatus }) => {

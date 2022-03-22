@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from "react";
+import { VFC, useCallback, useState } from "react";
 import Image from "next/image";
 import { css } from "@emotion/react";
 import { signOut, useSession } from "next-auth/react";
@@ -7,25 +7,24 @@ import useLocalStorage from "@/libs/hooks/useLocalStorage";
 import NewWindow from "react-new-window";
 import { AuthProvider } from "@/libs/types";
 
-const TwitterButton: FC<{ switchProvider: Function }> = ({
-	switchProvider,
-}) => {
+const TwitterButton: VFC = () => {
 	const { data: session } = useSession();
 	const [popup, setPopup] = useState<boolean>(false);
-	const [authProvider, setAuthProvider] =
-		useLocalStorage<AuthProvider>("authProvider");
-	const activeSession = session && session.user.name.includes("@");
+	const [authProvider, setAuthProvider] = useLocalStorage<AuthProvider>(
+		"authProvider",
+		!!session
+	);
+	const activeSession = authProvider === "twitter";
 
 	const buttonClickHandler = useCallback(async () => {
 		if (!!session) {
-			switchProvider(authProvider);
 			await signOut({ redirect: false });
 		}
 		if (!activeSession) {
 			setAuthProvider("twitter");
-			await setPopup(true);
+			setPopup(true);
 		}
-	}, [session, activeSession, switchProvider, authProvider, setAuthProvider]);
+	}, [session, activeSession, setAuthProvider]);
 
 	return (
 		<div>

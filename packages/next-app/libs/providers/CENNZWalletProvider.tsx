@@ -80,21 +80,6 @@ export default function CENNZWalletProvider({
 		setWallet(extension);
 	}, [extension, disconnectWallet]);
 
-	// 2. Pick the right account once a `wallet` has been set
-	// useEffect(() => {
-	// 	if (!wallet || !accounts || !selectAccount) return;
-	//
-	// 	const storedAccount = store.get("CENNZNET-ACCOUNT");
-	// 	if (!storedAccount) return selectAccount(accounts[0]);
-	//
-	// 	const matchedAccount = accounts.find(
-	// 		(account) => account.address === storedAccount.address
-	// 	);
-	// 	if (!matchedAccount) return selectAccount(accounts[0]);
-	//
-	// 	selectAccount(matchedAccount);
-	// }, [wallet, accounts, selectAccount]);
-
 	return (
 		<CENNZWalletContext.Provider
 			value={{

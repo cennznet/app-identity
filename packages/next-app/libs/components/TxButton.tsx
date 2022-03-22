@@ -8,6 +8,11 @@ import { useCENNZApi } from "@/libs/providers/CENNZApiProvider";
 import { SubmittableExtrinsic } from "@cennznet/api/types";
 import useLocalStorage from "@/libs/hooks/useLocalStorage";
 
+interface IdentityInfo {
+	twitter?: string | { BlakeTwo256: string };
+	riot?: string | { BlakeTwo256: string };
+}
+
 const TxButton: FC<{
 	setModalOpen: Function;
 	setModalStatus: Function;
@@ -23,57 +28,84 @@ const TxButton: FC<{
 	const { selectedAccount, wallet } = useCENNZWallet();
 	const signer = wallet?.signer;
 
-	useEffect(() => {
-		if (!api || !session?.user.name || !authProvider) return;
-
-		let tx: SubmittableExtrinsic<"promise", any>;
-		if (authProvider === "discord") {
-			tx = api.tx.identity.setIdentity({
-				info: {
-					riot: blake2AsHex(session.user.name),
-				},
-			});
-		}
-
-		if (authProvider === "twitter") {
-			tx = api.tx.identity.setIdentity({
-				info: {
-					additional: [],
-					display: { None: null },
-					legal: { None: null },
-					web: { None: null },
-					riot: { None: null },
-					email: { None: null },
-					pgpFingerprint: null,
-					image: { None: null },
-					twitter: {
-						BlakeTwo256: blake2AsHex(session.user.name.split("@")[1]),
-					},
-				},
-			});
-		}
-
-		console.log("tx", tx);
-
-		if (tx) setExtrinsic(tx);
-	}, [authProvider, api, session, setExtrinsic]);
-
 	const selectCENNZAccount = () => {
 		setModalStatus({ status: "connect-wallet", message: "" });
 		setModalOpen(true);
 	};
 
+	useEffect(() => {
+		if (!api || !session?.user.name || !authProvider || !selectedAccount)
+			return;
+
+		(async () => {
+			const identity = (
+				await api.query.identity.identityOf(selectedAccount.address)
+			).toHuman();
+
+			let info: IdentityInfo = {};
+			if (identity) info = (identity as any).info;
+			let tx: SubmittableExtrinsic<"promise", any>;
+
+			if (authProvider === "discord") {
+				info.riot = { BlakeTwo256: blake2AsHex(session.user.name) };
+			}
+
+			if (authProvider === "twitter") {
+				info.twitter = {
+					BlakeTwo256: blake2AsHex(session.user.name.split("@")[1]),
+				};
+			}
+
+			tx = api.tx.identity.setIdentity({ info });
+			setExtrinsic(tx);
+		})();
+	}, [authProvider, api, session, setExtrinsic, selectedAccount]);
+
 	const signAndSendTx = useCallback(async () => {
-		if (!api || !selectedAccount || !signer || !extrinsic) return;
+		if (!api || !selectedAccount || !signer || !extrinsic || !authProvider)
+			return;
 
 		return new Promise((resolve, reject) => {
 			extrinsic
-				.signAndSend(selectedAccount.address, { signer }, (yeet) => {
-					resolve(yeet);
-				})
-				.catch((err) => reject(err));
+				.signAndSend(
+					selectedAccount.address,
+					{ signer },
+					async ({ status, events }: any) => {
+						setModalStatus({
+							status: "in-progress",
+							message:
+								`Linking \`${selectedAccount.meta.name}\` with ${authProvider}`.toUpperCase(),
+						});
+						setModalOpen(true);
+						if (status.isInBlock) {
+							for (const {
+								event: { method, section },
+							} of events) {
+								if (section === "system" && method === "ExtrinsicSuccess") {
+									setModalStatus({
+										status: "success",
+										message:
+											`Successfully linked \`${selectedAccount.meta.name}\` with ${authProvider}`.toUpperCase(),
+									});
+								}
+							}
+						}
+					}
+				)
+				.catch((err) => {
+					setModalStatus({ status: "fail", message: err.message });
+					reject(err);
+				});
 		});
-	}, [api, selectedAccount, signer, extrinsic]);
+	}, [
+		api,
+		selectedAccount,
+		signer,
+		extrinsic,
+		authProvider,
+		setModalOpen,
+		setModalStatus,
+	]);
 
 	if (selectedAccount) {
 		if (session?.validAccount)
@@ -81,7 +113,7 @@ const TxButton: FC<{
 				<div>
 					<div css={styles.button(authProvider)} onClick={signAndSendTx}>
 						<p>
-							link {authProvider} with `{selectedAccount.meta.name}`
+							link `{selectedAccount.meta.name}` with {authProvider}
 						</p>
 					</div>
 					<div css={styles.changeAccount}>

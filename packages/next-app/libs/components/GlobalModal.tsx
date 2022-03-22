@@ -53,10 +53,9 @@ const GlobalModal: FC<{
 					)}
 
 					<div css={styles.title}>
-						{modalStatus.status === "in-progress" &&
-							"Connection Is In Progress"}
-						{modalStatus.status === "success" && "Connection Tx Completed"}
-						{modalStatus.status === "fail" && "Connection Tx Failed"}
+						{modalStatus.status === "in-progress" && "Linking Is In Progress"}
+						{modalStatus.status === "success" && "Linking Tx Completed"}
+						{modalStatus.status === "fail" && "Linking Tx Failed"}
 					</div>
 					<div css={styles.message}>{modalStatus.message}</div>
 					{modalStatus.status !== "in-progress" && (

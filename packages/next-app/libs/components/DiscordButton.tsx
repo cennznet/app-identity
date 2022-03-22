@@ -39,7 +39,11 @@ const DiscordButton: FC<{ switchProvider: Function }> = ({
 	return (
 		<div>
 			{popup && !session && (
-				<NewWindow url="/sign-in" onUnload={() => setPopup(false)} />
+				<NewWindow
+					url="/sign-in"
+					onUnload={() => setPopup(false)}
+					features={{ height: 600, width: 800 }}
+				/>
 			)}
 			<button css={styles.buttonContainer(!!session)}>
 				<div css={styles.authButton} onClick={buttonClickHandler}>

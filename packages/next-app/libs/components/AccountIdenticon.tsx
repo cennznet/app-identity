@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import dynamic from "next/dynamic";
-import type { IdentityProps } from "@polkadot/react-identicon/types";
+import { IdentityProps } from "@/libs/types";
 
 const Identicon = dynamic(() => import("@polkadot/react-identicon"), {
 	ssr: false,

@@ -1,5 +1,4 @@
 import NextAuth from "next-auth";
-import store from "store";
 import Twitter from "next-auth/providers/twitter";
 import DiscordProvider from "next-auth/providers/discord";
 import {
@@ -22,8 +21,6 @@ export default NextAuth({
 				params: { "user.fields": ["created_at", "public_metrics"] },
 			},
 			profile({ data }) {
-				store.set("auth-provider", "twitter");
-
 				return {
 					id: data.id,
 					name: `@${data.username}`,
@@ -34,8 +31,6 @@ export default NextAuth({
 			clientId: DISCORD_ID,
 			clientSecret: DISCORD_SECRET,
 			profile(profile) {
-				store.set("auth-provider", "discord");
-
 				if (!!profile.avatar) {
 					const format = profile.avatar.startsWith("a_") ? "gif" : "png";
 					profile.image_url = `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.${format}`;
@@ -53,7 +48,6 @@ export default NextAuth({
 	],
 	callbacks: {
 		async session({ session }) {
-			session.authProvider = store.get("auth-provider");
 			session.validAccount = true;
 
 			return session;

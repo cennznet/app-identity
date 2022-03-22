@@ -1,13 +1,22 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { css } from "@emotion/react";
-import { signOut, useSession } from "next-auth/react";
-import { AccountInput, AuthTxButton, SignOut } from "@/libs/components";
-import { AuthProvider } from "@/types";
+import { useSession } from "next-auth/react";
+import {
+	DiscordButton,
+	IdentityDetails,
+	TwitterButton,
+	TxButton,
+} from "@/libs/components";
+import { AuthProvider, ModalStatus } from "@/libs/types";
+import GlobalModal from "@/libs/components/GlobalModal";
+import { useCENNZWallet } from "@/libs/providers/CENNZWalletProvider";
 
 const Home: FC = () => {
 	const { data: session } = useSession();
-	const [address, setAddress] = useState<string>();
+	const { selectedAccount } = useCENNZWallet();
 	const [authProvider, setAuthProvider] = useState<AuthProvider>();
+	const [modalOpen, setModalOpen] = useState<boolean>();
+	const [modalStatus, setModalStatus] = useState<ModalStatus>();
 
 	useEffect(() => {
 		if (!session) return setAuthProvider("discord");
@@ -17,35 +26,30 @@ const Home: FC = () => {
 			: setAuthProvider("discord");
 	}, [session]);
 
-	const switchProvider = useCallback(
-		async (provider: AuthProvider) => {
-			if (!!session) await signOut({ redirect: false });
-			setAuthProvider(provider);
-		},
-		[session]
-	);
-
 	return (
-		<div css={styles.root(authProvider)}>
-			<div css={styles.discord}>
-				<span onClick={() => switchProvider("discord")}>discord</span>
-			</div>
-			<div css={styles.twitter}>
-				<span onClick={() => switchProvider("twitter")}>twitter</span>
-			</div>
+		<div css={styles.root(authProvider, !!session)}>
+			<div css={styles.container}>
+				<GlobalModal
+					isOpen={modalOpen}
+					modalStatus={modalStatus}
+					setIsOpen={setModalOpen}
+				/>
+				<div css={styles.auth}>
+					<DiscordButton switchProvider={setAuthProvider} />
+					<TwitterButton switchProvider={setAuthProvider} />
+				</div>
 
-			<div css={styles.input}>
-				<p>Enter your CENNZnet Address:</p>
-				<AccountInput setAddress={setAddress} address={address} />
-			</div>
+				<IdentityDetails />
 
-			<AuthTxButton
-				authProvider={authProvider}
-				CENNZnetAddress={address}
-				sendTx={() => alert("linking account")}
-			/>
-			{!!session && <SignOut handle={session.user.name} />}
-			<br />
+				<TxButton
+					authProvider={authProvider}
+					CENNZnetAddress={selectedAccount?.address}
+					sendTx={() => alert("linking account")}
+					setModalOpen={setModalOpen}
+					setModalStatus={setModalStatus}
+				/>
+				<br />
+			</div>
 		</div>
 	);
 };
@@ -54,55 +58,28 @@ export default Home;
 
 const styles = {
 	root:
-		(authProvider: string) =>
+		(authProvider: string, session: boolean) =>
 		({ palette, shadows }) =>
 			css`
 				margin: 2em auto;
-				border: 1.5px solid ${palette.primary[authProvider]};
+				border: 1.5px solid
+					${session ? palette.primary[authProvider] : palette.primary.main};
 				border-radius: 4px;
-				width: 50%;
+				width: 40em;
 				box-shadow: ${shadows[1]};
+
+				@media (max-width: 500px) {
+					width: 20em;
+				}
 			`,
-	discord: ({ palette }) => css`
-		margin-left: 1em;
-		font-size: 20px;
-		cursor: pointer;
-		width: 80px;
-		margin-top: 0.8em;
-
-		span {
-			color: ${palette.primary.discord};
-			font-weight: bold;
-			letter-spacing: 0.3px;
-			line-height: 125%;
-			text-transform: uppercase;
-		}
+	container: css`
+		width: 100%;
+		margin: 0 auto;
+		position: relative;
 	`,
-	twitter: ({ palette }) => css`
-		margin-right: 1em;
-		font-size: 20px;
-		float: right;
-		cursor: pointer;
-		margin-top: -1.25em;
-
-		span {
-			color: ${palette.primary.twitter};
-			font-weight: bold;
-			letter-spacing: 0.3px;
-			line-height: 125%;
-			text-transform: uppercase;
-		}
-	`,
-	input: css`
-		width: 90%;
-		margin: 2em auto;
-		padding-bottom: 1em;
-		font-size: 18px;
-
-		p {
-			font-weight: bold;
-			letter-spacing: 0.3px;
-			line-height: 125%;
-		}
+	auth: css`
+		width: 100%;
+		display: inline-flex;
+		justify-content: space-between;
 	`,
 };

@@ -19,8 +19,7 @@
     "prettier-format": "prettier --config .prettierrc.json ./ --write"
   },
   "dependencies": {
-    "@cennznet/api": "^2.1.0-alpha.1",
-    "react-new-window": "^0.2.1"
+    "@cennznet/api": "^2.1.0-alpha.1"
   },
   "devDependencies": {
     "prettier": "^2.5.1"

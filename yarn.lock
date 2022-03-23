@@ -1420,6 +1420,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/ua-parser-js@npm:^0.7.36":
+  version: 0.7.36
+  resolution: "@types/ua-parser-js@npm:0.7.36"
+  checksum: 8c24d4dc12ed1b8b98195838093391c358c81bf75e9cae0ecec8f7824b441e069daaa17b974a3e257172caddb671439f0c0b44bf43bfcf409b7a574a25aab948
+  languageName: node
+  linkType: hard
+
 "@types/webidl-conversions@npm:*":
   version: 6.1.1
   resolution: "@types/webidl-conversions@npm:6.1.1"
@@ -3110,6 +3117,7 @@ __metadata:
     dotenv: ^16.0.0
     mongoose: ^6.2.6
     ts-node: ^10.7.0
+    tsconfig-paths: ^3.14.0
     tslib: ^2.3.1
     typescript: ^4.6.2
   languageName: unknown
@@ -3869,6 +3877,7 @@ __metadata:
     "@polkadot/react-identicon": ^1.2.1
     "@types/node": 17.0.21
     "@types/react": 17.0.40
+    "@types/ua-parser-js": ^0.7.36
     eslint: 8.11.0
     eslint-config-next: 12.1.0
     eslint-config-prettier: ^8.5.0
@@ -3876,7 +3885,8 @@ __metadata:
     next-auth: ^4.2.1
     react: ^17.0.2
     react-dom: ^17.0.2
-    store: ^2.0.12
+    react-new-window: ^0.2.1
+    ua-parser-js: ^1.0.2
   languageName: unknown
   linkType: soft
 
@@ -4440,6 +4450,18 @@ __metadata:
   version: 17.0.2
   resolution: "react-is@npm:17.0.2"
   checksum: 9d6d111d8990dc98bc5402c1266a808b0459b5d54830bbea24c12d908b536df7883f268a7868cfaedde3dd9d4e0d574db456f84d2e6df9c4526f99bb4b5344d8
+  languageName: node
+  linkType: hard
+
+"react-new-window@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "react-new-window@npm:0.2.1"
+  dependencies:
+    prop-types: ^15.7.2
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0
+    react-dom: ^16.0.0 || ^17.0.0
+  checksum: b35af2b84ed0201e11cf0463d9619de74268a790130ad5fc56a5006da5f787b215e27ff3482b096cf7f82c61314998a09b01ed62fb1b9466a840f8c9beb83c7e
   languageName: node
   linkType: hard
 
@@ -5042,7 +5064,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfig-paths@npm:^3.12.0, tsconfig-paths@npm:^3.9.0":
+"tsconfig-paths@npm:^3.12.0, tsconfig-paths@npm:^3.14.0, tsconfig-paths@npm:^3.9.0":
   version: 3.14.0
   resolution: "tsconfig-paths@npm:3.14.0"
   dependencies:
@@ -5142,6 +5164,13 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 40b493a71747fb89fa70df104e2c4a5e284b43750af5bea024090a5261cefa387f7a9372411b13030f7bf5555cee4275443d08805642ae5c74ef76740854a4c7
+  languageName: node
+  linkType: hard
+
+"ua-parser-js@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "ua-parser-js@npm:1.0.2"
+  checksum: ff7f6d79a9c1a38aa85a0e751040fc7e17a0b621bda876838d14ebe55aca4e50e68da0350f181e58801c2d8a35e7db4e12473776e558910c4b7cabcec96aa3bf
   languageName: node
   linkType: hard
 

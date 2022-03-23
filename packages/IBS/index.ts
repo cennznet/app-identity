@@ -152,45 +152,42 @@ async function processDataAtBlockHash(blockHash) {
 		const filteredExtrinsics = extrinsics.filter(
 			(ext) => ext.isSigned && ext.method.section === "identity"
 		);
-		if (filteredExtrinsics.length > 0) {
-			for (let i = 0; i < filteredExtrinsics.length; i++) {
-				if (filteredExtrinsics[i].method.method === "setIdentity") {
-					console.log("-- New CENNZnet identity transaction");
-					const args = filteredExtrinsics[i].method.args["info"];
-					// Discord
-					// TODO Change riot to discord when Substrate commit has been merged
-					if (args["riot"] !== "None") {
-						const key = Object.keys(args["riot"])[0];
-						if (key === "BlakeTwo256") {
-							const discord_hash = args["riot"][key];
-							const identity = {
-								cennznet_account: filteredExtrinsics[i].signer,
-								account_hash: discord_hash,
-								account_type: "discord",
-							};
-							await addCENNZnetClaim(identity);
-						} else {
-							console.log("Err: Account needs to be encoded with BlakeTwo256");
-						}
-					}
-					// Twitter
-					if (args["twitter"] !== "None") {
-						const key = Object.keys(args["twitter"])[0];
-						if (key === "BlakeTwo256") {
-							const twitter_hash = args["twitter"][key];
-							const identity = {
-								cennznet_account: filteredExtrinsics[i].signer,
-								account_hash: twitter_hash,
-								account_type: "twitter",
-							};
-							await addCENNZnetClaim(identity);
-						} else {
-							console.log("Err: Account needs to be encoded with BlakeTwo256");
-						}
-					}
+		if(!filteredExtrinsics?.length) return;
+		filteredExtrinsics.forEach(async (filteredExtrinsic) => {
+			if (filteredExtrinsic.method.method !== "setIdentity") {
+				return;
+			}
+			console.log("-- New CENNZnet identity transaction");
+			const args = filteredExtrinsic.method.args["info"];
+			if (args["riot"] !== "None") {
+				const key = Object.keys(args["riot"])[0];
+				if (key === "BlakeTwo256") {
+					const discord_hash = args["riot"][key];
+					const identity = {
+						cennznet_account: filteredExtrinsic.signer,
+						account_hash: discord_hash,
+						account_type: "discord",
+					};
+					await addCENNZnetClaim(identity);
+				} else {
+					console.log("Err: Account needs to be encoded with BlakeTwo256");
 				}
 			}
-		}
+			if (args["twitter"] !== "None") {
+				const key = Object.keys(args["twitter"])[0];
+				if (key === "BlakeTwo256") {
+					const twitter_hash = args["twitter"][key];
+					const identity = {
+						cennznet_account: filteredExtrinsic.signer,
+						account_hash: twitter_hash,
+						account_type: "twitter",
+					};
+					await addCENNZnetClaim(identity);
+				} else {
+					console.log("Err: Account needs to be encoded with BlakeTwo256");
+				}
+			}
+		});
 	} else {
 		console.log(
 			`Retrieving block details from rpc.chain.getBlock failed for hash ${blockHash}`

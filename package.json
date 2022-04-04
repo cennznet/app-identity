@@ -17,7 +17,8 @@
     "lint": "yarn workspace next-app lint",
     "ibs": "yarn workspace identity-background-service start",
     "prettier-format": "prettier --config .prettierrc.json ./ --write",
-    "hash": "ts-node IBS/blakeTwo256Hasher.ts"
+    "hash": "ts-node IBS/blakeTwo256Hasher.ts",
+    "discord": "ts-node ./packages/IBS/discordBot.ts"
   },
   "dependencies": {
     "@cennznet/api": "^2.1.0-alpha.1"

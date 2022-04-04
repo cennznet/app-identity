@@ -4,9 +4,10 @@ import { Api } from "@cennznet/api";
 import { Keyring } from "@polkadot/keyring";
 import { cryptoWaitReady, blake2AsHex } from "@polkadot/util-crypto";
 import dbConnect from "@/libs/db/dbConnect";
+import { initialiseBot, assignIdentityRole } from "discordBot";
 import CennznetClaims from "@/libs/db/models/cennznetclaims";
 import AccountClaims from "@/libs/db/models/accountclaims";
-import { CENNZ_PROVIDER, REG_INDEX } from "@/libs/constants";
+import { CENNZ_PROVIDER, REG_INDEX_DISCORD, REG_INDEX_TWITTER } from "@/libs/constants";
 
 let api;
 let keyring;
@@ -19,15 +20,14 @@ async function initialise() {
 	const types = {
 		IdentityInfo: {
 			additional: "Vec<(Data, Data)>",
-			display: "Data",
 			legal: "Data",
 			web: "Data",
-			riot: "Data",
+			discord: "Data",
 			email: "Data",
 			pgp_fingerprint: "Option<[u8; 20]>",
 			image: "Data",
 			twitter: "Data",
-		},
+		}
 	};
 	await cryptoWaitReady();
 	api = await Api.create({ provider: CENNZ_PROVIDER, types });
@@ -44,6 +44,7 @@ async function addCENNZnetClaim(identity: {
 	account_type: string;
 }) {
 	await dbConnect();
+	console.log("connected");
 	try {
 		// Filter includes CENNZnet account AND account_type
 		// This is because a user can verify different account types so we need to distinguish both.
@@ -52,7 +53,7 @@ async function addCENNZnetClaim(identity: {
 			account_type: identity.account_type,
 		};
 		const existingCennznetClaim = await CennznetClaims.findOne(filter);
-		if (existingCennznetClaim) {
+		if (!!existingCennznetClaim) {
 			// Claim already exists, Check if hash is different and if it has NOT been verified already
 			if (
 				existingCennznetClaim.account_hash !== identity.account_hash &&
@@ -101,12 +102,14 @@ async function findMatch() {
 			account_type: claim.account_type,
 		};
 		const accountMatch = await AccountClaims.findOne(filter);
-		if (accountMatch) {
-			// TODO Check whether we want two matches before providing a judgement
+		if (accountMatch && blake2AsHex(accountMatch.username) === claim.account_hash) {
 			if (await submitJudgement(claim.cennznet_account, claim.account_type)) {
 				await CennznetClaims.updateOne(filter, {
 					verified: true,
 				});
+				if (claim.account_type === "discord"){
+					assignIdentityRole(accountMatch.username);
+				}
 			}
 		}
 	}
@@ -122,10 +125,10 @@ async function submitJudgement(target: string, account_type: string) {
 		let reg_index;
 		if (account_type === "discord") {
 			signer = eve;
-			reg_index = process.env.REG_INDEX_DISCORD;
+			reg_index = REG_INDEX_DISCORD;
 		} else if (account_type === "twitter") {
 			signer = ferdie;
-			reg_index = process.env.REG_INDEX_TWITTER;
+			reg_index = REG_INDEX_TWITTER;
 		} else {
 			return false;
 		}
@@ -158,10 +161,10 @@ async function processDataAtBlockHash(blockHash) {
 			}
 			console.log("-- New CENNZnet identity transaction");
 			const args = filteredExtrinsic.method.args["info"];
-			if (args["riot"] !== "None") {
-				const key = Object.keys(args["riot"])[0];
+			if (args["discord"] !== "None") {
+				const key = Object.keys(args["discord"])[0];
 				if (key === "BlakeTwo256") {
-					const discord_hash = args["riot"][key];
+					const discord_hash = args["discord"][key];
 					const identity = {
 						cennznet_account: filteredExtrinsic.signer,
 						account_hash: discord_hash,
@@ -210,6 +213,8 @@ async function main() {
 }
 
 initialise().then(() => {
+	// assignIdentityRole("JasonT#0425");
+	initialiseBot();
 	main().catch((error) => {
 		console.error(error);
 	});

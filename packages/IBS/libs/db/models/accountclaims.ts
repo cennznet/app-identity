@@ -6,7 +6,7 @@ const AccountClaimsSchema = new Schema({
 		type: String,
 		required: true,
 	},
-	account_hash: {
+	username: {
 		type: String,
 		required: true,
 	},
